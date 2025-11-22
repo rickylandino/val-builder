@@ -1,0 +1,51 @@
+.val-builder {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #f5f5f5;
+}
+
+.val-footer {
+  background: white;
+  padding: 16px 24px;
+  border-top: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  box-shadow: 0 -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.footer-btn {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.footer-btn.primary {
+  background: #8bc34a;
+  color: white;
+}
+
+.footer-btn.primary:hover {
+  background: #7cb342;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(139, 195, 74, 0.3);
+}
+
+.footer-btn.secondary {
+  background: #f5f5f5;
+  color: #333;
+  border: 1px solid #ddd;
+}
+
+.footer-btn.secondary:hover {
+  background: #e0e0e0;
+}
+
+.footer-btn:active {
+  transform: translateY(0);
+}

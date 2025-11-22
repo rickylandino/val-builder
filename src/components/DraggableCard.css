@@ -1,0 +1,54 @@
+.draggable-card {
+  background: white;
+  border: 2px solid #c5e1a5;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 12px;
+  cursor: grab;
+  transition: all 0.2s;
+  user-select: none;
+}
+
+.draggable-card:hover {
+  border-color: #8bc34a;
+  box-shadow: 0 2px 8px rgba(139, 195, 74, 0.2);
+  transform: translateY(-2px);
+}
+
+.draggable-card:active {
+  cursor: grabbing;
+}
+
+.draggable-card.dragging {
+  opacity: 0.5;
+  cursor: grabbing;
+}
+
+.card-content {
+  color: #333;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.card-content p {
+  margin: 0 0 8px 0;
+}
+
+.card-content p:last-child {
+  margin-bottom: 0;
+}
+
+.card-content strong {
+  color: #7b1fa2;
+  font-weight: 600;
+}
+
+.card-content ul,
+.card-content ol {
+  padding-left: 20px;
+  margin: 8px 0;
+}
+
+.card-content li {
+  margin-bottom: 4px;
+}

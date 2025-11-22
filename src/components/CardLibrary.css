@@ -1,0 +1,34 @@
+.card-library {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #e8f5e9;
+  border-radius: 8px;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.card-library-scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+}
+
+.card-library-scroll::-webkit-scrollbar {
+  width: 8px;
+}
+
+.card-library-scroll::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+}
+
+.card-library-scroll::-webkit-scrollbar-thumb {
+  background: #8bc34a;
+  border-radius: 4px;
+}
+
+.card-library-scroll::-webkit-scrollbar-thumb:hover {
+  background: #7cb342;
+}
