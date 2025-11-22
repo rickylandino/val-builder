@@ -1,5 +1,5 @@
 import { ValBuilder } from './components/ValBuilder'
-import './App.css'
+// import './App.css'
 
 function App() {
   return <ValBuilder />

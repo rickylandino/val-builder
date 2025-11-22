@@ -1,8 +1,8 @@
 import { useState } from 'react';
+import { Button } from "@/components/ui/button";
 import { Header } from './Header';
-import { SectionNavigation } from './SectionNavigation';
-import { SectionContent } from './SectionContent';
-import './ValBuilder.css';
+import { SectionNavigation } from './sections/SectionNavigation';
+import { SectionContent } from './sections/SectionContent';
 
 // Mock data - will be replaced with database data later
 const mockSections = [
@@ -116,7 +116,7 @@ export const ValBuilder = () => {
   };
 
   return (
-    <div className="val-builder">
+    <div className="flex flex-col h-screen bg-muted/50">
       <Header
         client="Test Company"
         valDescription="2026 VAL"
@@ -140,10 +140,16 @@ export const ValBuilder = () => {
         onEditorContentChange={handleCommentChange}
       />
       
-      <footer className="val-footer">
-        <button className="footer-btn secondary">Cancel</button>
-        <button className="footer-btn secondary">Print</button>
-        <button className="footer-btn primary">Save</button>
+      <footer className="bg-background px-6 py-4 border-t border-border flex justify-end gap-3 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]">
+        <Button variant="secondary">
+          Cancel
+        </Button>
+        <Button variant="secondary">
+          Print
+        </Button>
+        <Button variant="default">
+          Save
+        </Button>
       </footer>
     </div>
   );
