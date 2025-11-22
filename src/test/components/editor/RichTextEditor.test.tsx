@@ -103,7 +103,7 @@ describe('RichTextEditor', () => {
 
   it('handles drag over event', () => {
     render(<RichTextEditor {...defaultProps} />);
-    const editorContainer = screen.getByRole('region');
+    const editorContainer = screen.getByLabelText('Rich Text Editor');
     
     const dragOverEvent = new Event('dragover', { bubbles: true });
     Object.defineProperty(dragOverEvent, 'dataTransfer', {
@@ -118,7 +118,7 @@ describe('RichTextEditor', () => {
   it('renders with all required elements', () => {
     render(<RichTextEditor {...defaultProps} />);
     
-    expect(screen.getByRole('region')).toBeInTheDocument();
+    expect(screen.getByLabelText('Rich Text Editor')).toBeInTheDocument();
     expect(screen.getByTestId('editor-content')).toBeInTheDocument();
     expect(screen.getByTestId('drag-handle')).toBeInTheDocument();
     expect(screen.getByTestId('toolbar-bold')).toBeInTheDocument();
@@ -255,7 +255,7 @@ describe('RichTextEditor', () => {
   it('sets drag effect to copy on drag over', () => {
     render(<RichTextEditor {...defaultProps} />);
     
-    const editorContainer = screen.getByRole('region');
+    const editorContainer = screen.getByLabelText('Rich Text Editor');
     const dragOverEvent = new Event('dragover', { bubbles: true });
     const mockDataTransfer = { dropEffect: '' };
     Object.defineProperty(dragOverEvent, 'dataTransfer', {
@@ -299,15 +299,8 @@ describe('RichTextEditor', () => {
   it('renders with correct CSS classes', () => {
     render(<RichTextEditor {...defaultProps} />);
     
-    const editorContainer = screen.getByRole('region');
+    const editorContainer = screen.getByLabelText('Rich Text Editor');
     expect(editorContainer).toHaveClass('bg-white', 'border', 'border-gray-300', 'rounded-lg');
-  });
-
-  it('sets tabIndex on editor container', () => {
-    render(<RichTextEditor {...defaultProps} />);
-    
-    const editorContainer = screen.getByRole('region');
-    expect(editorContainer).toHaveAttribute('tabIndex', '0');
   });
 
   it('sets tiptap-editor class in editor attributes', () => {

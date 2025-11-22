@@ -130,7 +130,7 @@ describe('CommentSidebar', () => {
   it('shows active state for active thread', () => {
     render(<CommentSidebar {...defaultProps} activeThreadId="thread-1" />);
     
-    const thread = screen.getByText('First comment').closest('[role="button"]');
+    const thread = screen.getByText('First comment').closest('button');
     expect(thread).toHaveClass('border-primary');
   });
 

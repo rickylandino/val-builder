@@ -19,15 +19,15 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="flex justify-between items-center gap-6 flex-wrap">
         <div className="flex gap-8 flex-1 flex-wrap">
           <div className="flex flex-col gap-1">
-            <label className="text-xs opacity-90 font-medium">Client</label>
+            <span className="text-xs opacity-90 font-medium">Client</span>
             <div className="text-lg font-semibold">{client}</div>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs opacity-90 font-medium">VAL Description</label>
+            <span className="text-xs opacity-90 font-medium">VAL Description</span>
             <div className="text-base font-medium">{valDescription}</div>
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-xs opacity-90 font-medium">Plan Year Dates</label>
+            <span className="text-xs opacity-90 font-medium">Plan Year Dates</span>
             <div className="flex items-center gap-2">
               <Input 
                 type="date" 

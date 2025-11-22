@@ -132,8 +132,8 @@ export const SectionContent: React.FC<SectionContentProps> = ({
       <div className="flex flex-col flex-1 bg-white p-4">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium text-gray-700">Mode</label>
-            <select className="px-2 py-1 rounded border border-gray-300 bg-gray-50 text-sm text-gray-700" value={mode} disabled>
+            <label htmlFor="mode-select" className="text-sm font-medium text-gray-700">Mode</label>
+            <select id="mode-select" className="px-2 py-1 rounded border border-gray-300 bg-gray-50 text-sm text-gray-700" value={mode} disabled>
               <option value="edit">Edit</option>
               <option value="view">View</option>
             </select>

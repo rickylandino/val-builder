@@ -181,7 +181,7 @@ describe('SectionContent', () => {
     
     await user.click(screen.getByTestId('add-comment-btn'));
     
-    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].getAttribute('data-testid')?.replace('thread-', '');
+    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].dataset.testid?.replace('thread-', '');
     const resolvedStatus = screen.getByTestId(`thread-${threadId}-resolved`);
     
     expect(resolvedStatus).toHaveTextContent('open');
@@ -197,7 +197,7 @@ describe('SectionContent', () => {
     
     await user.click(screen.getByTestId('add-comment-btn'));
     
-    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].getAttribute('data-testid')?.replace('thread-', '');
+    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].dataset.testid?.replace('thread-', '');
     const resolvedStatus = screen.getByTestId(`thread-${threadId}-resolved`);
     
     await user.click(screen.getByRole('button', { name: /resolve/i }));
@@ -244,7 +244,7 @@ describe('SectionContent', () => {
     
     await user.click(screen.getByTestId('add-comment-btn'));
     
-    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].getAttribute('data-testid')?.replace('thread-', '');
+    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].dataset.testid?.replace('thread-', '');
     
     // Initially the thread is active (set when created)
     expect(screen.getByTestId('active-thread')).toHaveTextContent(threadId || '');
@@ -261,7 +261,7 @@ describe('SectionContent', () => {
     
     await user.click(screen.getByTestId('add-comment-btn'));
     
-    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].getAttribute('data-testid')?.replace('thread-', '');
+    const threadId = screen.getAllByTestId(/^thread-thread-/)[0].dataset.testid?.replace('thread-', '');
     
     // Click to deactivate
     await user.click(screen.getByRole('button', { name: /click thread/i }));

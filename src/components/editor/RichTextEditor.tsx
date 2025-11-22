@@ -67,8 +67,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     <div className="w-full">
       <section aria-label="Rich Text Editor"
         className="bg-white border border-gray-300 rounded-lg shadow-sm p-0"
-        role="region"
-        tabIndex={0}
         onDragOver={handleDragOver}
       >
         <div className="relative">

@@ -92,9 +92,8 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
 
       <div className="flex-1 overflow-y-auto space-y-3">
         {threads.map((thread) => (
-          <div
+          <button
             key={thread.id}
-            role="button"
             tabIndex={0}
             className={`p-3 rounded-lg border cursor-pointer transition-all ${
               activeThreadId === thread.id 
@@ -207,7 +206,7 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
                 </Button>
               </div>
             )}
-          </div>
+          </button>
         ))}
 
         {threads.length === 0 && (
