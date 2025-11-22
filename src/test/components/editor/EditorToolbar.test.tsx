@@ -21,7 +21,7 @@ describe('EditorToolbar', () => {
         to: 10,
       },
     },
-  };
+  } as any;
 
   it('renders toolbar buttons', () => {
     render(<EditorToolbar editor={mockEditor} />);

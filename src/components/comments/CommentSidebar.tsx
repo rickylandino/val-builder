@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Editor } from '@tiptap/react';
 import type { CommentThread } from '../../types/comments';
-import './CommentSidebar.css';
+import { Button } from '@/components/ui/button';
 
 interface CommentSidebarProps {
   editor: Editor | null;
@@ -58,15 +58,17 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
   };
 
   return (
-    <div className="comment-sidebar">
-      <div className="comment-sidebar-header">
-        <h3>Comments</h3>
-        <span className="comment-count">{threads.filter(t => !t.resolved).length}</span>
+    <div className="flex flex-col h-full">
+      <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
+        <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
+        <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 text-xs font-semibold text-white bg-primary rounded-full">
+          {threads.filter(t => !t.resolved).length}
+        </span>
       </div>
 
-      <div className="quick-comment-box">
+      <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
         <textarea
-          className="quick-comment-input"
+          className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
           placeholder="Add a quick comment..."
           value={quickCommentContent}
           onChange={(e) => setQuickCommentContent(e.target.value)}
@@ -78,77 +80,105 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
           }}
           rows={3}
         />
-        <button
-          className="submit-btn quick-submit"
+        <Button
+          className="w-full mt-2"
           onClick={handleQuickComment}
           disabled={!quickCommentContent.trim()}
+          size="sm"
         >
           Add Comment
-        </button>
+        </Button>
       </div>
 
-      <div className="comment-threads">
+      <div className="flex-1 overflow-y-auto space-y-3">
         {threads.map((thread) => (
           <div
             key={thread.id}
-            className={`comment-thread ${activeThreadId === thread.id ? 'active' : ''} ${thread.resolved ? 'resolved' : ''}`}
+            role="button"
+            tabIndex={0}
+            className={`p-3 rounded-lg border cursor-pointer transition-all ${
+              activeThreadId === thread.id 
+                ? 'border-primary bg-primary/5 shadow-md' 
+                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+            } ${
+              thread.resolved 
+                ? 'opacity-60' 
+                : ''
+            }`}
             onClick={() => onThreadClick(thread.id)}
+            onKeyDown={(e: React.KeyboardEvent) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onThreadClick(thread.id);
+              }
+            }}
           >
-            <div className="thread-header">
-              <div className="thread-status">
+            <div className="flex items-center justify-between mb-2">
+              <div>
                 {thread.resolved ? (
-                  <span className="status-badge resolved">✓ Resolved</span>
+                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
+                    <span>✓</span> Resolved
+                  </span>
                 ) : (
-                  <span className="status-badge open">Open</span>
+                  <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded">
+                    Open
+                  </span>
                 )}
               </div>
-              <button
-                className="resolve-btn"
-                onClick={(e) => {
+              <Button
+                variant="secondary"
+                size="sm"
+                className="h-6 px-2 text-xs"
+                onClick={(e: React.MouseEvent) => {
                   e.stopPropagation();
                   onResolveThread(thread.id);
                 }}
               >
                 {thread.resolved ? 'Reopen' : 'Resolve'}
-              </button>
+              </Button>
             </div>
 
-            <div className="thread-comments">
+            <div className="space-y-2">
               {thread.comments.map((comment) => (
-                <div key={comment.id} className="comment">
-                  <div className="comment-header">
-                    <div className="comment-author">
+                <div key={comment.id} className="py-2 border-b border-gray-100 last:border-b-0">
+                  <div className="flex items-start justify-between mb-1">
+                    <div className="flex items-center gap-2">
                       {comment.author.avatar ? (
-                        <img src={comment.author.avatar} alt={comment.author.name} className="author-avatar" />
+                        <img 
+                          src={comment.author.avatar} 
+                          alt={comment.author.name} 
+                          className="w-6 h-6 rounded-full object-cover" 
+                        />
                       ) : (
-                        <div className="author-avatar-placeholder">
+                        <div className="flex items-center justify-center w-6 h-6 text-xs font-semibold text-white bg-primary rounded-full">
                           {comment.author.name.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className="author-name">{comment.author.name}</span>
+                      <span className="text-sm font-medium text-gray-900">{comment.author.name}</span>
                     </div>
-                    <div className="comment-meta">
-                      <span className="comment-time">{formatDate(comment.createdAt)}</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
                       <button
-                        className="delete-btn"
+                        className="text-gray-400 hover:text-red-600 transition-colors text-lg leading-none"
                         onClick={(e) => {
                           e.stopPropagation();
                           onDeleteComment(thread.id, comment.id);
                         }}
+                        aria-label="Delete comment"
                       >
                         ×
                       </button>
                     </div>
                   </div>
-                  <div className="comment-content">{comment.content}</div>
+                  <div className="text-sm text-gray-700 ml-8">{comment.content}</div>
                 </div>
               ))}
             </div>
 
             {!thread.resolved && (
-              <div className="add-comment">
+              <div className="mt-2 pt-2 border-t border-gray-200">
                 <textarea
-                  className="comment-input"
+                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent resize-none"
                   placeholder="Add a reply..."
                   value={newCommentContent[thread.id] || ''}
                   onChange={(e) =>
@@ -161,26 +191,29 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
                       handleAddComment(thread.id);
                     }
                   }}
+                  rows={2}
                 />
-                <button
-                  className="submit-btn"
-                  onClick={(e) => {
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="w-full mt-1.5 h-7 text-xs"
+                  onClick={(e: React.MouseEvent) => {
                     e.stopPropagation();
                     handleAddComment(thread.id);
                   }}
                   disabled={!newCommentContent[thread.id]?.trim()}
                 >
                   Reply
-                </button>
+                </Button>
               </div>
             )}
           </div>
         ))}
 
         {threads.length === 0 && (
-          <div className="no-comments">
-            <p>No comments yet</p>
-            <small>Select text and click the comment button to add one</small>
+          <div className="flex flex-col items-center justify-center py-8 text-center text-gray-500">
+            <p className="text-sm font-medium mb-1">No comments yet</p>
+            <small className="text-xs text-gray-400">Select text and click the comment button to add one</small>
           </div>
         )}
       </div>

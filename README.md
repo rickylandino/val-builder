@@ -64,9 +64,6 @@ val-builder/
 │   │   ├── header/          # Application header
 │   │   ├── sections/        # Section navigation and content
 │   │   ├── ui/              # ShadCN UI components
-│   │   │   ├── button.tsx
-│   │   │   ├── input.tsx
-│   │   │   └── select.tsx
 │   │   └── ValBuilder.tsx   # Main app container
 │   ├── config/              # Configuration files
 │   ├── lib/                 # Utility functions
