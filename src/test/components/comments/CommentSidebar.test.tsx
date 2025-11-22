@@ -130,8 +130,8 @@ describe('CommentSidebar', () => {
   it('shows active state for active thread', () => {
     render(<CommentSidebar {...defaultProps} activeThreadId="thread-1" />);
     
-    const thread = screen.getByText('First comment').closest('.comment-thread');
-    expect(thread).toHaveClass('active');
+    const thread = screen.getByText('First comment').closest('[role="button"]');
+    expect(thread).toHaveClass('border-primary');
   });
 
   it('shows resolved badge for resolved threads', () => {
@@ -144,7 +144,7 @@ describe('CommentSidebar', () => {
     
     render(<CommentSidebar {...defaultProps} threads={resolvedThreads} />);
     
-    expect(screen.getByText('✓ Resolved')).toBeInTheDocument();
+    expect(screen.getByText(/Resolved/)).toBeInTheDocument();
   });
 
   it('does not count resolved threads in header count', () => {
