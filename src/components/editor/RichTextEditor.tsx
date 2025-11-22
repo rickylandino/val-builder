@@ -65,7 +65,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
   return (
     <div className="w-full">
-      <div
+      <section aria-label="Rich Text Editor"
         className="bg-white border border-gray-300 rounded-lg shadow-sm p-0"
         role="region"
         tabIndex={0}
@@ -84,7 +84,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         <div className="p-4">
           <EditorContent editor={editor} className="prose prose-sm max-w-none min-h-[120px] focus:outline-none" />
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
 import { RichTextEditor } from '@/components/editor/RichTextEditor';
 
 let mockEditor: any;
@@ -12,7 +11,7 @@ vi.mock('@tiptap/react', () => ({
     mockUseEditorConfig = config;
     return mockEditor;
   }),
-  EditorContent: ({ editor }: any) => <div data-testid="editor-content">Editor Content</div>,
+  EditorContent: () => <div data-testid="editor-content">Editor Content</div>,
 }));
 
 vi.mock('@tiptap/extension-drag-handle-react', () => ({
