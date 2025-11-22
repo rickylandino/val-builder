@@ -19,6 +19,9 @@ export default defineConfig({
         '**/*.config.{ts,js}',
         'src/main.tsx',
         'src/App.tsx',
+        '**/test/**',
+        '**/config/**',
+        'coverage/'
       ],
     },
   },
