@@ -1,8 +1,7 @@
-import { ValBuilder } from './components/ValBuilder'
-// import './App.css'
+import { LandingPage } from './components/LandingPage'
 
 function App() {
-  return <ValBuilder />
+  return <LandingPage />
 }
 
 export default App

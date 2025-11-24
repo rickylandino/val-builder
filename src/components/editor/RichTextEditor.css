@@ -1,0 +1,110 @@
+.rich-text-editor-container {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  overflow: hidden;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 4px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-bottom: 1px solid #ddd;
+  flex-wrap: wrap;
+}
+
+.editor-toolbar button {
+  padding: 6px 12px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s;
+  min-width: 32px;
+}
+
+.editor-toolbar button:hover {
+  background: #e8f5e9;
+  border-color: #8bc34a;
+}
+
+.editor-toolbar button.is-active {
+  background: #8bc34a;
+  color: white;
+  border-color: #7cb342;
+}
+
+.toolbar-divider {
+  width: 1px;
+  background: #ddd;
+  margin: 0 4px;
+}
+
+.tiptap-editor {
+  padding: 16px;
+  min-height: 200px;
+  outline: none;
+  position: relative;
+}
+
+/* Drag handle styles */
+.drag-handle-icon {
+  cursor: grab;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 14px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.drag-handle-icon:hover {
+  background: #f5f5f5;
+  color: #8bc34a;
+  border-color: #8bc34a;
+}
+
+.drag-handle-icon:active {
+  cursor: grabbing;
+  background: #e8f5e9;
+}
+
+
+
+.tiptap-editor p {
+  margin: 0 0 12px 0;
+}
+
+.tiptap-editor p:last-child {
+  margin-bottom: 0;
+}
+
+.tiptap-editor ul,
+.tiptap-editor ol {
+  padding-left: 24px;
+  margin: 0 0 12px 0;
+}
+
+.tiptap-editor li {
+  margin-bottom: 4px;
+}
+
+.tiptap-editor strong {
+  font-weight: bold;
+}
+
+.tiptap-editor em {
+  font-style: italic;
+}
+
+.tiptap-editor u {
+  text-decoration: underline;
+}

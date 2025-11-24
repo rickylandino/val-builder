@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Select } from '@/components/ui/select';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 interface SectionNavigationProps {
@@ -20,16 +20,17 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
   return (
     <div className="flex items-center gap-4 bg-white rounded-lg shadow px-4 py-3 border border-gray-200">
       <div className="text-sm font-semibold text-gray-700">Sections</div>
-      <Select
-        value={currentSection}
-        onChange={(e) => onSectionChange(e.target.value)}
-        className=""
-      >
-        {sections.map((section) => (
-          <option key={section} value={section}>
-            {section}
-          </option>
-        ))}
+      <Select value={currentSection} onValueChange={onSectionChange}>
+        <SelectTrigger className="w-[300px]">
+          <SelectValue placeholder="Select section" />
+        </SelectTrigger>
+        <SelectContent>
+          {sections.map((section) => (
+            <SelectItem key={section} value={section}>
+              {section}
+            </SelectItem>
+          ))}
+        </SelectContent>
       </Select>
       <div className="flex items-center gap-2 ml-auto">
         <Button variant="default" size="sm" onClick={onPrevSection}>

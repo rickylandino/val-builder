@@ -1,5 +1,10 @@
 # RLL
 
+## What is needed to maintain documentation
+- Ensure components follow components.build practices
+- Ensure structural changes get updated in documentation
+- All unit tests are updated
+
 ## Project Structure
 
 ### Tech Stack

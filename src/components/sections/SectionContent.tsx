@@ -124,7 +124,7 @@ export const SectionContent: React.FC<SectionContentProps> = ({
   };
 
   return (
-    <div className="flex w-full h-full min-h-[500px] bg-section-bg rounded-lg overflow-hidden shadow">
+    <div className="flex w-full h-full min-h-[500px] bg-section-bg rounded-lg overflow-hidden">
       <div className="flex flex-col w-1/4 min-w-[220px] max-w-[300px] bg-white border-r border-gray-200 p-4">
         <CardLibrary cards={cards} onCardDragStart={onCardDragStart} />
       </div>
