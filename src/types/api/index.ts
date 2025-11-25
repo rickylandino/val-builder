@@ -13,7 +13,6 @@ export * from './CompanyPlan';
 export * from './ValHeader';
 export * from './ValSection';
 export * from './ValDetail';
-export * from './ValItem';
 export * from './ValSubItem';
 export * from './ValTemplateItem';
 export * from './ValSubContent';

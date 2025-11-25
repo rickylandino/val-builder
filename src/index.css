@@ -19,10 +19,34 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Tiptap Editor Drop Indicator */
-.drop-indicator {
-  border-bottom: 2px solid #68ae5c !important;
-  padding-bottom: 2px !important;
+/* Tiptap Editor Drop Indicator - Only for the target paragraph */
+.tiptap-editor p.drop-indicator {
+  position: relative;
+  background-color: rgba(104, 174, 92, 0.15) !important;
+  border-left: 4px solid #68ae5c !important;
+  padding-left: 12px !important;
+  margin: 2px 0 !important;
+  transition: all 0.15s ease !important;
+  box-shadow: 0 0 0 2px rgba(104, 174, 92, 0.2) !important;
+  border-radius: 2px !important;
+}
+
+.tiptap-editor p.drop-indicator::after {
+  content: '← Drop here';
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #68ae5c;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 3px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .tiptap-editor p {

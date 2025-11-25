@@ -1,3 +1,14 @@
+.format-handle {
+  display: inline-block;
+  color: #1976d2;
+  font-size: 16px;
+  vertical-align: middle;
+  transition: color 0.2s;
+  cursor: pointer;
+}
+.format-handle:hover {
+  color: #d32f2f;
+}
 .rich-text-editor-container {
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -43,13 +54,14 @@
 }
 
 .tiptap-editor {
-  padding: 16px;
+  padding: 26px;
   min-height: 200px;
   outline: none;
   position: relative;
 }
 
 /* Drag handle styles */
+
 .drag-handle-icon {
   cursor: grab;
   background: white;
@@ -75,6 +87,28 @@
 .drag-handle-icon:active {
   cursor: grabbing;
   background: #e8f5e9;
+}
+
+.format-handle-icon {
+  cursor: pointer;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #8bc34a;
+  font-size: 16px;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.format-handle-icon:hover {
+  background: #e8f5e9;
+  color: #388e3c;
+  border-color: #388e3c;
 }
 
 
@@ -107,4 +141,56 @@
 
 .tiptap-editor u {
   text-decoration: underline;
+}
+
+/* Chevron Placeholder Styles */
+.tiptap-editor .chevron-placeholder,
+.tiptap-editor span[data-chevron-placeholder] {
+  background-color: #fff9c4;
+  border: 1px solid #fbc02d;
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin: 0 2px;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  transition: all 0.2s;
+  position: relative;
+  user-select: none;
+}
+
+.tiptap-editor .chevron-placeholder:hover,
+.tiptap-editor span[data-chevron-placeholder]:hover {
+  background-color: #fff59d;
+  border-color: #f9a825;
+  box-shadow: 0 0 0 2px rgba(251, 192, 45, 0.3);
+}
+
+/* Tooltip hint on hover */
+.tiptap-editor .chevron-placeholder::after {
+  content: 'Click to edit';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-4px);
+  background: #424242;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1000;
+}
+
+.tiptap-editor .chevron-placeholder:hover::after {
+  opacity: 1;
+}
+
+/* Make chevron characters visually distinct */
+.tiptap-editor .chevron-placeholder {
+  font-weight: 500;
+  color: #e65100;
 }

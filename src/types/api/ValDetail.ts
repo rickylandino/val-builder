@@ -1,13 +1,16 @@
 export interface ValDetail {
-  valDetailsId: string | null; // Guid as UUID string
-  valId: number | null;
-  groupId: number | null;
-  groupContent: string | null;
-  displayOrder: number | null;
-  bullet: boolean | null;
+  valDetailsId: string; // GUID - camelCase to match API
+  valId: number;
+  groupId: number;
+  groupContent: string;
+  displayOrder: number;
+  bullet: boolean; // API returns boolean
   indent: number | null;
-  bold: boolean | null;
-  center: boolean | null;
+  bold: boolean; // API returns boolean
+  center: boolean; // API returns boolean
   blankLineAfter: number | null;
-  tightLineHeight: boolean | null;
+  tightLineHeight: boolean; // API returns boolean
 }
+
+export type CreateValDetail = Omit<ValDetail, 'valDetailsId'>;
+export type UpdateValDetail = Partial<ValDetail> & Pick<ValDetail, 'valDetailsId'>;

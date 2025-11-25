@@ -7,5 +7,8 @@ export const useValTemplateItemsByGroupId = (groupId: number): UseQueryResult<Va
     queryKey: ['valTemplateItems', groupId],
     queryFn: () => valTemplateItemsService.getAll(groupId),
     enabled: !!groupId,
+    staleTime: 10 * 60 * 1000, // 10 minutes - template items rarely change
+    gcTime: 30 * 60 * 1000, // 30 minutes - keep in cache longer
+    refetchOnWindowFocus: false,
   });
 };

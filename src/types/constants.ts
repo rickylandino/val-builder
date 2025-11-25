@@ -14,9 +14,8 @@ export const FieldLimits = {
     SectionText: 100,
     DefaultColType: 10,
   },
-  ValItem: {
-    ItemType: 20,
-    ItemText: 3000,
+  ValDetail: {
+    GroupContent: 3000,
   },
   ValSubItem: {
     ColValue: 200,
@@ -36,10 +35,12 @@ export const Defaults = {
     displayOrder: 0,
     autoIndent: false,
   },
-  ValItem: {
-    col1Width: 0,
-    col2Width: 0,
-    col3Width: 0,
-    col4Width: 0,
+  ValDetail: {
+    bullet: 0,
+    indent: null,
+    bold: 0,
+    center: 0,
+    blankLineAfter: null,
+    tightLineHeight: 0,
   },
 } as const;

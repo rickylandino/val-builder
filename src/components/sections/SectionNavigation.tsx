@@ -21,7 +21,7 @@ export const SectionNavigation: React.FC<SectionNavigationProps> = ({
     <div className="flex items-center gap-4 bg-white rounded-lg shadow px-4 py-3 border border-gray-200">
       <div className="text-sm font-semibold text-gray-700">Sections</div>
       <Select value={currentSection} onValueChange={onSectionChange}>
-        <SelectTrigger className="w-[300px]">
+        <SelectTrigger className="w-[400px]">
           <SelectValue placeholder="Select section" />
         </SelectTrigger>
         <SelectContent>
