@@ -48,7 +48,7 @@ export const ValPreview = ({
             
             return (
               <div key={section.groupId} className="mb-6">
-                {showSectionHeaders && section.sectionText && (
+                {showSectionHeaders && section.sectionText && details.length > 0 && (
                   <pre className="mb-3 border-b-1 border-gray-300">
                     <span style={{backgroundColor: '#fbeeb8'}}>{section.sectionText}</span>
                   </pre>

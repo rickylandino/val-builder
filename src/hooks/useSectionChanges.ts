@@ -4,10 +4,49 @@ import type { ValChangesState, SectionChanges } from '@/lib/valChangesTracker';
 import { aggregateAllChanges } from '@/lib/valChangesTracker';
 import { v4 as uuidv4 } from 'uuid';
 
-function injectValDetailsId(html: string, valDetailsId: string) {
+function stripParentPTag(html: string): string {
+  return html.replace(/^<p[^>]*>(.*?)<\/p>$/is, '$1');
+}
+
+// Helper to generate HTML content from ValDetail[]
+export function generateHtmlContent(details: ValDetail[]) {
+    return [...details]
+        .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+        .map(detail => {
+            // Always set classes from flags
+            let classString = `class="`;
+            if (detail.indent && detail.indent > 0) {
+                classString += `indent-level-${detail.indent} `;
+            }
+            if (detail.center) {
+                classString += `text-center `;
+            }
+            if (detail.tightLineHeight) {
+                classString += `tightLineHeight `;
+            }
+            if (detail.bold) {
+                classString += `font-bold `;
+            }
+            if (detail.bullet) {
+                classString += `bullet `;
+            }
+            classString = classString.trim() + '"';
+
+            let content = detail.groupContent || '';
+            content = `<p>${stripParentPTag(content)}</p>`;
+
+            if (content.startsWith('<')) {
+                return injectValDetailsId(content, detail.valDetailsId, classString);
+            } else {
+                return `<p ${classString} data-val-details-id="${detail.valDetailsId}">${content}</p>`;
+            }
+        }).join('');
+}
+
+function injectValDetailsId(html: string, valDetailsId: string, classString: string) {
     return html.replace(
         /<(\w+)([^>]*)>/,
-        `<$1$2 data-val-details-id="${valDetailsId}">`
+        `<$1$2 data-val-details-id="${valDetailsId}" ${classString}>`
     );
 }
 
@@ -41,31 +80,21 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
         if (existingSection) {
             // Section exists - load its saved state
             setCurrentDetails([...existingSection.details]);
-            setEditorContent(existingSection.editorContent);
+            setEditorContent(generateHtmlContent(existingSection.details));
         } else {
             // First time seeing this section - initialize from allValDetails filtered by groupID
             const valDetailsForGroup = allValDetails.filter(detail => detail.groupId === currentGroupId);
-            const sortedDetails = [...valDetailsForGroup].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-
-            // Combine all detail content into a single HTML string for the editor
-            // Each detail becomes a paragraph in the editor
-            const htmlContent = sortedDetails.map(detail => {
-                const content = detail.groupContent || '';
-                // If content is already wrapped in HTML tags, use as-is; otherwise wrap in <p>
-                return content.startsWith('<') ? injectValDetailsId(content, detail.valDetailsId) : `<p data-val-details-id="${detail.valDetailsId}">${content}</p>`;
-            }).join('');
-
             setChangesState(prev => ({
                 ...prev,
                 [currentGroupId]: {
                     groupID: currentGroupId,
-                    editorContent: htmlContent,
+                    editorContent: generateHtmlContent(valDetailsForGroup),
                     details: [...valDetailsForGroup],
                     originalDetails: [...valDetailsForGroup],
                 },
             }));
             setCurrentDetails([...valDetailsForGroup]);
-            setEditorContent(htmlContent);
+            setEditorContent(generateHtmlContent(valDetailsForGroup));
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentGroupId, allValDetails]); // Trigger on section change or data load
@@ -74,6 +103,7 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
     const updateEditorContent = useCallback((content: string) => {
         if (!currentGroupId) return;
 
+        // Do not update details from editor HTML; always regenerate HTML from details
         setEditorContent(content);
         setChangesState(prev => {
             const section = prev[currentGroupId] || {
@@ -82,7 +112,6 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
                 details: [],
                 originalDetails: [],
             };
-
             return {
                 ...prev,
                 [currentGroupId]: {
@@ -93,11 +122,12 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
         });
     }, [currentGroupId]);
 
-    // Update current section's details
+    // Update current section's details and regenerate editor content
     const updateSectionDetails = useCallback((details: ValDetail[]) => {
         if (!currentGroupId) return;
 
         setCurrentDetails(details);
+        const htmlContent = generateHtmlContent(details);
         setChangesState(prev => {
             const section = prev[currentGroupId] || {
                 groupID: currentGroupId,
@@ -105,16 +135,27 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
                 details: [],
                 originalDetails: [],
             };
-
             return {
                 ...prev,
                 [currentGroupId]: {
                     ...section,
                     details: [...details],
+                    editorContent: htmlContent,
                 },
             };
         });
+        setEditorContent(htmlContent);
     }, [currentGroupId]);
+
+        // Update a single ValDetail and regenerate editor content
+    const updateSingleValDetail = useCallback((updatedDetail: ValDetail) => {
+        if (!currentGroupId) return;
+        const updatedDetails = currentDetails.map(detail =>
+            detail.valDetailsId === updatedDetail.valDetailsId ? updatedDetail : detail
+        );
+
+        updateSectionDetails(updatedDetails);
+    }, [currentDetails, currentGroupId, updateSectionDetails]);
 
     // Add a new detail to current section
     const addDetail = useCallback((detail: Partial<ValDetail>) => {
@@ -154,14 +195,16 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
 
     // Reorder details
     const reorderDetails = useCallback((fromIndex: number, toIndex: number) => {
-        const details = [...currentDetails];
-        const [movedDetail] = details.splice(fromIndex, 1);
-        details.splice(toIndex, 0, movedDetail);
-        // Update displayOrder for all details
-        const orderedDetails = details.map((detail, idx) => ({
-            ...detail,
-            displayOrder: idx + 1,
-        }));
+        // Create a new order of valDetailsIds
+        const ids = currentDetails.map(d => d.valDetailsId);
+        const [movedId] = ids.splice(fromIndex, 1);
+        ids.splice(toIndex, 0, movedId);
+
+        // Map displayOrder to the new order, but keep all other properties
+        const orderedDetails = ids.map((id, idx) => {
+            const detail = currentDetails.find(d => d.valDetailsId === id);
+            return detail ? { ...detail, displayOrder: idx + 1 } : undefined;
+        }).filter(Boolean) as ValDetail[];
         updateSectionDetails(orderedDetails);
     }, [currentDetails, updateSectionDetails]);
 
@@ -171,60 +214,77 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
         groupId: number
     ): ValDetail[] => {
         // Extract paragraphs from HTML content
-        // Match <p>...</p> tags to get individual paragraphs
         const paragraphMatches = section.editorContent.match(/<p[^>]*>.*?<\/p>/gs) || [];
         const paragraphs = paragraphMatches
             .map(p => p.trim())
             .filter(p => p.length > 0 && p !== '<p></p>');
 
-        return paragraphs.map((htmlParagraph, index) => {
-            // Try to match by position first (same index), preserving the valDetailsId
-            const existingDetailAtPosition = section.originalDetails[index];
+        const newDetails = paragraphs.map((htmlParagraph, index) => {
+            const idMatch = /data-val-details-id=["']([^"']+)["']/.exec(htmlParagraph);
+            const valDetailsId = idMatch ? idMatch[1] : '';
+            if (!valDetailsId) return null;
 
-            if (existingDetailAtPosition) {
-                // Update existing detail at this position
-                return {
-                    ...existingDetailAtPosition,
-                    groupContent: htmlParagraph,
-                    displayOrder: index + 1,
-                };
+            // Extract formatting classes from the paragraph HTML
+            const classMatch = /class=["']([^"']+)["']/.exec(htmlParagraph);
+            const classString = classMatch ? classMatch[1] : '';
+            // Always set flags from classes using RegExp.exec()
+            const bold = /font-bold/.exec(classString) !== null;
+            const bullet = /bullet/.exec(classString) !== null;
+            const center = /text-center/.exec(classString) !== null;
+            const tightLineHeight = /tightLineHeight/.exec(classString) !== null;
+            let indent = null;
+            const indentMatch = /indent-level-(\d+)/.exec(classString);
+            if (indentMatch) {
+                indent = Number.parseInt(indentMatch[1], 10);
             }
 
-            // New detail (more paragraphs than original)
+            // Extract text content from paragraph
+            const textMatch = /^<p[^>]*>(.*?)<\/p>$/is.exec(htmlParagraph);
+            const textContent = textMatch ? textMatch[1] : '';
+
+            // Generate groupContent from flags and text
+            let newClassString = '';
+            if (indent && indent > 0) newClassString += `indent-level-${indent} `;
+            if (center) newClassString += 'text-center ';
+            if (tightLineHeight) newClassString += 'tightLineHeight ';
+            if (bold) newClassString += 'font-bold ';
+            if (bullet) newClassString += 'bullet ';
+            newClassString = newClassString.trim();
+            const groupContent = `<p class="${newClassString}" data-val-details-id="${valDetailsId}">${textContent}</p>`;
+
             return {
-                valDetailsId: '', // Will be assigned by backend
+                valDetailsId,
                 valId: valId,
                 groupId,
-                groupContent: htmlParagraph,
-                bullet: false,
-                indent: null,
-                bold: false,
-                center: false,
+                groupContent,
+                bullet,
+                indent,
+                bold,
+                center,
                 blankLineAfter: null,
-                tightLineHeight: false,
+                tightLineHeight,
                 displayOrder: index + 1,
-            };
-        });
+            } as ValDetail;
+        }).filter((d): d is ValDetail => d !== null);
+        return newDetails;
     }, [valId]);
 
     // Calculate all changes across all sections
     const getAllChanges = useCallback(() => {
         const updatedState = { ...changesState };
 
-        Object.keys(updatedState).forEach(groupIDStr => {
-            const groupID = Number(groupIDStr);
-            const section = updatedState[groupID];
-
-            if (section) {
-                updatedState[groupID] = {
-                    ...section,
-                    details: parseEditorContentToDetails(section, groupID),
-                };
-            }
-        });
+        // Only parse editor content for the current section
+        // Other sections use their already-tracked details array
+        if (currentGroupId && updatedState[currentGroupId]) {
+            const section = updatedState[currentGroupId];
+            updatedState[currentGroupId] = {
+                ...section,
+                details: parseEditorContentToDetails(section, currentGroupId),
+            };
+        }
 
         return aggregateAllChanges(valId, updatedState);
-    }, [valId, changesState, parseEditorContentToDetails]);
+    }, [valId, changesState, parseEditorContentToDetails, currentGroupId]);
 
     // Check if there are any unsaved changes
     const hasChanges = useCallback(() => {
@@ -258,6 +318,7 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
         currentDetails,
         updateEditorContent,
         updateSectionDetails,
+        updateSingleValDetail,
         addDetail,
         removeDetail,
         updateDetail,

@@ -10,13 +10,15 @@ import { useAllValDetails, useSaveValChanges } from '@/hooks/api/useValDetails';
 import { useSectionChanges } from '@/hooks/useSectionChanges';
 import { valPdfService } from '@/services/api/valPdfService';
 import type { ValHeader, ValDetail } from '@/types/api';
+import { ValDetailManagerDialog } from './ValDetailManagerDialog';
 
 type ViewMode = 'edit' | 'preview-sections' | 'preview-final';
 
-export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) => {
+export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: ValHeader, onCloseDrawer?: () => void }>) => {
     const { data: valSections, isLoading: sectionsLoading, error: sectionsError } = useValSections();
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [mode, setMode] = useState<ViewMode>('edit');
+    const [managerOpen, setManagerOpen] = useState(false);
 
     // Create sections array from API data
     const sections = useMemo(() =>
@@ -52,6 +54,7 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
         getAllChanges,
         hasChanges,
         resetChanges,
+        updateSingleValDetail,
     } = useSectionChanges({
         valId: valHeader.valId ?? 0,
         currentGroupId,
@@ -102,6 +105,8 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
         const index = sections.indexOf(section);
         if (index !== -1) {
             setCurrentSectionIndex(index);
+        } else {
+            console.warn('Section not found in sections array:', section);
         }
     };
 
@@ -117,8 +122,7 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
         }
     };
 
-    const handleCardDragStart = (id: string, content: string) => {
-        console.log('Dragging card:', id, content);
+    const handleCardDragStart = () => {
         // Future: implement drag to add template item
         // addItem({ itemText: content, templateItemId: Number(id) });
     };
@@ -128,13 +132,11 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
     };
 
     const handleUpdateValDetail = (updatedDetail: ValDetail) => {
-        // TODO: Implement update logic in useSectionChanges
-        console.log('Update ValDetail:', updatedDetail);
+        updateSingleValDetail(updatedDetail);
     };
 
     const handleGeneratePdf = async () => {
         if (!valHeader.valId) {
-            console.error('Missing valId');
             return;
         }
 
@@ -177,6 +179,17 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
         }
     };
 
+    // Add a refresh handler to refetch section details
+    const handleRefreshSection = async () => {
+        if (!valHeader.valId || !currentGroupId) return;
+        // Optionally, you can use your useAllValDetails hook or a direct API call
+        // For now, just reload the page or trigger a refetch in your data layer
+        // If using SWR or React Query, you can call mutate or refetch here
+        // Example: await refetchAllValDetails();
+        // For a simple demo, force a reload:
+        window.location.reload();
+    };
+
     const isDirty = hasChanges();
     const isPreviewMode = mode === 'preview-sections' || mode === 'preview-final';
 
@@ -187,6 +200,7 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
                 valDescription={valHeader.valDescription || "VAL"}
                 planYearStart={valHeader.planYearBeginDate?.toString() || ""}
                 planYearEnd={valHeader.planYearEndDate?.toString() || ""}
+                onCloseDrawer={onCloseDrawer}
             />
 
             {/* Mode Selector - Dropdown */}
@@ -204,13 +218,23 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
             </div>
 
             {!isPreviewMode && (
-                <SectionNavigation
-                    sections={sections}
-                    currentSection={currentSection}
-                    onSectionChange={handleSectionChange}
-                    onPrevSection={handlePrevSection}
-                    onNextSection={handleNextSection}
-                />
+                <div className="">
+                    <SectionNavigation
+                        sections={sections}
+                        currentSection={currentSection}
+                        onSectionChange={handleSectionChange}
+                        onPrevSection={handlePrevSection}
+                        onNextSection={handleNextSection}
+                    />
+                    {/* <Button
+                        variant="outline"
+                        size="sm"
+                        className="ml-2"
+                        onClick={() => setManagerOpen(true)}
+                    >
+                        Manage Section Details
+                    </Button> */}
+                </div>
             )}
 
             {isPreviewMode ? (
@@ -234,8 +258,17 @@ export const ValBuilder = ({ valHeader }: Readonly<{ valHeader: ValHeader }>) =>
                     onEditorContentChange={handleCommentChange}
                     currentSectionDetails={currentSectionDetails}
                     onUpdateValDetail={handleUpdateValDetail}
+                    valId={valHeader.valId}
                 />
             )}
+
+            <ValDetailManagerDialog
+                open={managerOpen}
+                onClose={() => setManagerOpen(false)}
+                sectionDetails={currentSectionDetails}
+                sectionName={currentSection}
+                onRefreshSection={handleRefreshSection}
+            />
 
             <footer className="bg-background px-6 py-4 border-t border-border flex justify-between items-center gap-3 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center gap-2">

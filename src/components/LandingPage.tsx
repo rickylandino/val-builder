@@ -51,7 +51,7 @@ export const LandingPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-[var(--color-secondary)] via-[var(--color-muted)] to-[var(--color-secondary)]">
       {/* Header */}
-      <header className="bg-[var(--color-primary)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-primary)]/60 border-b border-[var(--color-border)] sticky top-0 z-50">
+      <header className="bg-[var(--color-primary)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-primary)]/60 border-b border-[var(--color-border)] sticky top-0">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-[var(--color-primary-foreground)]/10 rounded-lg">

@@ -7,7 +7,7 @@
   cursor: pointer;
 }
 .format-handle:hover {
-  color: #d32f2f;
+  color: #0d47a1;
 }
 .rich-text-editor-container {
   border: 1px solid #ddd;
@@ -60,7 +60,15 @@
   position: relative;
 }
 
+ul {
+    list-style-type: disc;
+}
+
 /* Drag handle styles */
+
+.drag-handle {
+    left: 0 !important;
+}
 
 .drag-handle-icon {
   cursor: grab;
@@ -75,7 +83,26 @@
   color: #999;
   font-size: 14px;
   transition: all 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Enhanced drop indicator for drag-and-drop */
+.tiptap-editor p.drop-indicator {
+  position: relative;
+  min-height: 40px;
+  background: var(--color-primary, #68ae5c) !important;
+  margin: 8px 0;
+  border-radius: 4px;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  line-height: 40px;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(104, 174, 92, 0.18);
+}
+
+.tiptap-editor p.drop-indicator::before,
+.tiptap-editor p.drop-indicator::after {
+  display: none !important;
 }
 
 .drag-handle-icon:hover {
@@ -111,10 +138,12 @@
   border-color: #388e3c;
 }
 
+.tiptap-editor .tightLineHeight, .editor-preview .tightLineHeight {
+  margin-bottom: 0px !important;
+}
 
-
-.tiptap-editor p {
-  margin: 0 0 12px 0;
+.tiptap-editor p:not(.tightLineHeight), .editor-preview p:not(.tightLineHeight) {
+  margin-bottom: 12px;
 }
 
 .tiptap-editor p:last-child {
@@ -144,14 +173,13 @@
 }
 
 /* Chevron Placeholder Styles */
-.tiptap-editor .chevron-placeholder,
-.tiptap-editor span[data-chevron-placeholder] {
+.chevron-placeholder,
+span[data-chevron-placeholder] {
   background-color: #fff9c4;
-  border: 1px solid #fbc02d;
+  /* border: 1px solid #fbc02d; */
   border-radius: 3px;
   padding: 2px 4px;
   margin: 0 2px;
-  cursor: pointer;
   font-family: 'Courier New', monospace;
   transition: all 0.2s;
   position: relative;
@@ -160,6 +188,7 @@
 
 .tiptap-editor .chevron-placeholder:hover,
 .tiptap-editor span[data-chevron-placeholder]:hover {
+  cursor: pointer;
   background-color: #fff59d;
   border-color: #f9a825;
   box-shadow: 0 0 0 2px rgba(251, 192, 45, 0.3);
@@ -190,7 +219,145 @@
 }
 
 /* Make chevron characters visually distinct */
-.tiptap-editor .chevron-placeholder {
+.chevron-placeholder {
   font-weight: 500;
   color: #e65100;
+}
+
+.indent-level-1 {
+  margin-left: 20px;
+}
+.indent-level-2 {
+  margin-left: 40px;
+}
+.indent-level-3 {
+  margin-left: 60px;
+}
+.indent-level-4 {
+  margin-left: 80px;
+}
+
+.indent-level-1.bullet {
+  margin-left: calc(2em + 20px);
+}
+.indent-level-2.bullet {
+  margin-left: calc(2em + 40px);
+}
+.indent-level-3.bullet {
+  margin-left: calc(2em + 60px);
+}
+.indent-level-4.bullet {
+  margin-left: calc(2em + 80px);
+}
+
+.bullet {
+    display: list-item;
+    list-style-type: disc;
+    list-style-position: outside;
+    margin-left: 2em;
+}
+
+/* Temporary: style the standalone drop-indicator bar for easy CSS editing */
+.drop-indicator {
+  height: 40px;
+  background: var(--color-primary, #68ae5c);
+  margin: 8px 0;
+  border-radius: 4px;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+  line-height: 40px;
+  font-size: 16px;
+  box-shadow: 0 2px 8px rgba(104, 174, 92, 0.18);
+}
+
+/* Override ProseMirror drop cursor styles for custom drag-and-drop indicator */
+.ProseMirror-dropcursor, .ProseMirror-dropCursorBlack {
+  border-left: 6px solid var(--color-primary, #68ae5c) !important;
+  background: var(--color-primary, #68ae5c) !important;
+  opacity: 0.7 !important;
+  width: 6px !important;
+  z-index: 1000 !important;
+  border-radius: 3px !important;
+  box-shadow: 0 2px 8px rgba(104, 174, 92, 0.18) !important;
+}
+
+/* Optional: add a label above the drop cursor for clarity */
+.ProseMirror-dropcursor::after, .ProseMirror-dropCursorBlack::after {
+  content: 'Drop here';
+  position: absolute;
+  left: 12px;
+  top: -18px;
+  background: var(--color-primary, #68ae5c);
+  color: var(--color-primary-foreground, #fff);
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 1001;
+}
+
+/* Move handle styles */
+.move-handle-container {
+  display: inline-flex;
+  gap: 2px;
+  margin-left: 8px;
+  vertical-align: middle;
+  pointer-events: none;
+}
+.move-handle-container * {
+  pointer-events: auto;
+}
+.move-handle {
+  background: #f5f5f5;
+  border: 1px solid #8bc34a;
+  color: #388e3c;
+  border-radius: 3px;
+  font-size: 14px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  padding: 0;
+}
+.move-handle:hover {
+  background: #e8f5e9;
+  color: #1976d2;
+}
+.move-handle:active {
+  background: #c5e1a5;
+}
+.move-handle-up {
+  margin-right: 2px;
+}
+.move-handle-down {
+  margin-left: 2px;
+}
+
+/* Only show action icons (move, format, delete) on paragraph hover */
+.tiptap-editor p:hover .move-handle-container,
+.tiptap-editor p:hover .format-handle,
+.tiptap-editor p:hover .delete-handle {
+  opacity: 1;
+  transition: opacity 0.2s;
+}
+
+.move-handle-container {
+  opacity: 0.2;
+  transition: opacity 0.2s;
+}
+
+.format-handle,
+.delete-handle {
+  opacity: 0.2;
+  pointer-events: auto;
+  transition: opacity 0.2s;
+}
+
+.editor-preview p {
+    margin-bottom: calc(var(--spacing) * 3);
 }

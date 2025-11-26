@@ -32,38 +32,28 @@ export const ValDetailRenderer = ({ detail, index }: ValDetailRendererProps) => 
   // Highlight chevron fields in preview by wrapping <<...>> in a span
   const highlightChevrons = (html: string) => {
     if (!html) return '';
+    // Remove any existing chevron-placeholder spans
+    let cleanHtml = html.replace(/<span class="chevron-placeholder"[^>]*>(.*?)<\/span>/g, '$1');
     // Replace both HTML entities and raw chevrons
-    return html
-      // HTML entities
+    cleanHtml = cleanHtml
       .replaceAll(/(&lt;&lt;|&#60;&#60;|&#x3C;&#x3C;|<<)\s*(.+?)\s*(&gt;&gt;|&#62;&#62;|&#x3E;&#x3E;|>>)/g, (_, open, content, close) => {
         return `<span class="chevron-placeholder" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
       })
-      // Raw chevrons in HTML (not encoded)
       .replaceAll(/(<<)\s*(.+?)\s*(>>)/g, (_, open, content, close) => {
         return `<span class="chevron-placeholder" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
       });
+    return cleanHtml;
   };
 
   return (
     <div 
       key={detail.valDetailsId || index}
-      className={`mb-3 ${detail.center ? 'text-center' : 'text-justify'} ${detail.bold ? 'font-bold' : ''}`}
+      className={`editor-preview ${detail.center ? 'text-center' : 'text-justify'} ${detail.bold ? 'font-bold' : ''}`}
       style={{
         marginLeft: marginLeft || (detail.bullet ? '20px' : undefined),
         position: 'relative',
       }}
     >
-      {detail.bullet && (
-        <span 
-          style={{
-            position: 'absolute',
-            left: '-20px',
-            top: '0',
-          }}
-        >
-          •
-        </span>
-      )}
       <div 
         dangerouslySetInnerHTML={{ __html: highlightChevrons(detail.groupContent || '') }}
       />

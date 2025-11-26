@@ -1,12 +1,12 @@
 import { Node } from '@tiptap/core';
 
-export const FormatHandle = Node.create({
-    name: 'formatHandle',
+export const DeleteHandle = Node.create({
+    name: 'deleteHandle',
 
     addOptions() {
         return {
             HTMLAttributes: {},
-            onClick: null, // callback for formatting actions
+            onClick: null, // callback for delete actions
         };
     },
 

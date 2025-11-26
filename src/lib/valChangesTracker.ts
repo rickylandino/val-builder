@@ -43,7 +43,7 @@ export function calculateChanges(
     if (!currentIds.has(originalDetail.valDetailsId)) {
       changes.push({
         action: 'delete',
-        valDetailsId: originalDetail.valDetailsId,
+        detail: { valDetailsId: originalDetail.valDetailsId },
         groupId,
       });
     }
@@ -80,8 +80,6 @@ export function calculateChanges(
       }
     }
   });
-
-  console.log(changes);
 
   return changes;
 }
@@ -124,8 +122,6 @@ export function aggregateAllChanges(
     );
     allChanges.push(...changes);
   });
-
-  console.log(allChanges);
 
   return allChanges;
 }

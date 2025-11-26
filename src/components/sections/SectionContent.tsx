@@ -1,10 +1,11 @@
 import { RichTextEditor } from '../editor/RichTextEditor';
 import { CardLibrary } from '../cards/CardLibrary';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { CommentThread } from '../../types/comments';
 import { CommentSidebar } from '../comments/CommentSidebar';
 import type { ValDetail } from '@/types/api';
 import { FormatOptionsDialog } from '../val-builder/FormatOptionsDialog';
+import { generateHtmlContent, useSectionChanges } from '@/hooks/useSectionChanges';
 
 
 interface CardData {
@@ -25,6 +26,7 @@ interface SectionContentProps {
     currentSectionDetails?: ValDetail[];
     onUpdateValDetail?: (updatedDetail: ValDetail) => void;
     readOnly?: boolean;
+    valId?: number;
 }
 
 export const SectionContent: React.FC<SectionContentProps> = ({
@@ -36,13 +38,24 @@ export const SectionContent: React.FC<SectionContentProps> = ({
     currentSectionDetails = [],
     onUpdateValDetail,
     readOnly = false,
+    valId
 }) => {
     const [threads, setThreads] = useState<CommentThread[]>([]);
     const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
     const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
     const [formatDialogOpen, setFormatDialogOpen] = useState(false);
 
-    const selectedDetail = currentSectionDetails.find(d => d.valDetailsId === selectedDetailId) || null;
+    // Track details in local state for full control
+    const [localSectionDetails, setLocalSectionDetails] = useState<ValDetail[]>(currentSectionDetails);
+
+    const { updateSingleValDetail } = useSectionChanges({ valId: valId || 0, currentGroupId: null, allValDetails: undefined });
+
+    // Sync prop changes to local state
+    useEffect(() => {
+        setLocalSectionDetails(currentSectionDetails);
+    }, [currentSectionDetails]);
+
+    const selectedDetail = localSectionDetails.find(d => d.valDetailsId === selectedDetailId) || null;
 
     const handleCreateCommentThread = () => {
         const threadId = `thread-${Date.now()}`;
@@ -143,7 +156,43 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                 ...selectedDetail,
                 ...updates,
             };
+
+            // Use canonical update from useSectionChanges for state parity
+            if (typeof updateSingleValDetail === 'function') {
+                updateSingleValDetail(updatedDetail);
+            }
             onUpdateValDetail(updatedDetail);
+            setFormatDialogOpen(false);
+            // valDetailsService.update(updatedDetail.valDetailsId, updatedDetail).then(() => {
+            //     onUpdateValDetail(updatedDetail);
+            //     setFormatDialogOpen(false);
+            // });
+        }
+    };
+
+    // Remove a detail from localSectionDetails and mark for deletion
+    const removeDetail = (valDetailsId: string) => {
+        setLocalSectionDetails(prev => {
+            const updated = prev.filter(detail => detail.valDetailsId !== valDetailsId);
+            // Regenerate HTML and update editor
+            const htmlContent = generateHtmlContent(updated);
+            onEditorContentChange(htmlContent);
+            return updated;
+        });
+        setSelectedDetailId(null);
+        setFormatDialogOpen(false);
+    };
+
+    const handleDeleteIconClick = (
+        node: FormatIconClickNode
+    ) => {
+        const valDetailsId = node.attrs?.valDetailsId;
+        if (valDetailsId) {
+            // Just remove from editor and store change, don't call API
+            if (typeof removeDetail === 'function') {
+                removeDetail(valDetailsId);
+            }
+            setSelectedDetailId(null);
             setFormatDialogOpen(false);
         }
     };
@@ -189,11 +238,13 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                             readOnly={mode === 'preview-sections' || mode === 'preview-final' || readOnly}
                             // @ts-ignore: Accepts (node, pos, state) from FormatHandle extension
                             onFormat={handleFormatIconClick}
+                            // @ts-ignore: Accepts (node, pos, state) from FormatHandle extension
+                            onDelete={handleDeleteIconClick}
                         />
                     </div>
                 </div>
 
-                <div className="flex flex-col w-1/5 min-w-[180px] max-w-[260px] bg-white border-l border-gray-200 p-4">
+                {/* <div className="flex flex-col w-1/5 min-w-[180px] max-w-[260px] bg-white border-l border-gray-200 p-4">
                     <CommentSidebar
                         editor={null}
                         threads={threads}
@@ -204,7 +255,7 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                         onDeleteComment={handleDeleteComment}
                         onThreadClick={handleThreadClick}
                     />
-                </div>
+                </div> */}
             </div>
 
             <FormatOptionsDialog
