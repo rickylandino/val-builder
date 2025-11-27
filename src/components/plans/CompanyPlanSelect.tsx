@@ -12,7 +12,7 @@ export function CompanyPlanSelect({ companyId, value, onChange }: Readonly<{
 
   return (
     <Select value={value} onValueChange={onChange} disabled={!companyId || isLoading}>
-      <SelectTrigger className="w-full max-w-md">
+      <SelectTrigger className="w-full max-w-md" data-testid="select-trigger">
         <SelectValue placeholder={isLoading ? 'Loading plans...' : 'Select a plan'} />
       </SelectTrigger>
       <SelectContent className="z-50">

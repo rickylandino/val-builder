@@ -22,7 +22,6 @@
 - **CardLibrary** - Draggable card library for content templates
 - **DraggableCard** - Individual draggable content cards
 - **RichTextEditor** - TipTap-based rich text editor with toolbar and comment support
-- **EditorToolbar** - Separated toolbar component with formatting and list controls
 - **CommentSidebar** - Comment thread management sidebar
 - **UI Components** (ShadCN):
   - `Button` - Default and inverse variants with icon/sm sizes
@@ -37,7 +36,6 @@
 
 ### Testing
 - Vitest configuration with jsdom environment
-- Example test: `EditorToolbar.test.tsx`
 - Test scripts: `npm test`, `npm run test:ui`, `npm run test:coverage`
 
 ### Key Features

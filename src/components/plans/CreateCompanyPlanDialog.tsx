@@ -35,10 +35,13 @@ export function CreateCompanyPlanDialog(
       <DialogTrigger asChild>
         <Button variant="outline">New Plan</Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent aria-describedby="company-plan-dialog-desc">
         <DialogHeader>
           <DialogTitle>Create Company Plan</DialogTitle>
         </DialogHeader>
+        <div id="company-plan-dialog-desc" className="text-muted-foreground mb-2">
+          Fill out the details to create a new company plan.
+        </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="plan-name">Plan Name</Label>

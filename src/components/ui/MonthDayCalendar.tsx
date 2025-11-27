@@ -18,6 +18,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
   value: string;
   onChange: (val: string) => void;
   placeholder?: string;
+  'data-testid'?: string;
 }>) {
   const [month, day] = value.split('/').map(v => v ? Number.parseInt(v, 10) - 1 : -1);
   const [selectedMonth, setSelectedMonth] = useState(Math.max(month, 0));
@@ -64,7 +65,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
   };
 
   return (
-    <div className="relative">
+    <div className="relative" data-testid={arguments[0]['data-testid'] || 'month-day-calendar'}>
       <div className="flex gap-2">
         <input
           type="text"
@@ -73,6 +74,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
           placeholder={placeholder}
           pattern="^(0[1-9]|1[0-2])/(0[1-9]|[12][0-9]|3[01])$"
           className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+          data-testid="month-day-input"
         />
         <Popover open={open} onOpenChange={setOpen}>
           <PopoverTrigger asChild>
@@ -80,6 +82,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
               variant="outline"
               size="icon"
               className="shrink-0"
+              data-testid="month-day-calendar-trigger"
             >
               <Calendar className="h-4 w-4" />
             </Button>
@@ -92,6 +95,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(Number.parseInt(e.target.value, 10))}
               className="w-full p-2 border rounded bg-white"
+              data-testid="month-day-calendar-month-select"
             >
               {months.map((m, i) => (
                 <option key={m} value={i}>{m}</option>
@@ -100,7 +104,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
           </div>
 
           {/* Calendar grid */}
-          <div className="grid grid-cols-7 gap-1">
+          <div className="grid grid-cols-7 gap-1" data-testid="month-day-calendar-grid">
             {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d) => (
               <div key={d} className="text-center text-sm font-medium text-muted-foreground p-2">
                 {d}
@@ -116,6 +120,7 @@ export function MonthDayCalendar({ value, onChange, placeholder = 'Select date' 
                     'p-2 text-sm rounded hover:bg-accent hover:text-accent-foreground',
                     isSelected && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground'
                   )}
+                  data-testid={`month-day-calendar-day-${dayNum}`}
                 >
                   {dayNum}
                 </button>

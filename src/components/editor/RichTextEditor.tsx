@@ -2,14 +2,10 @@ import { useEditor, EditorContent } from '@tiptap/react';
 import { useEffect } from 'react';
 import StarterKit from '@tiptap/starter-kit';
 import { DragHandle } from '@tiptap/extension-drag-handle-react';
-import { Comment } from './extensions/Comment';
 import { ChevronPlaceholder } from './extensions/ChevronPlaceholder';
-import { EditorToolbar } from './EditorToolbar';
 import { v4 as uuidv4 } from 'uuid';
 import './RichTextEditor.css';
 import { EditorParagraph } from './extensions/EditorParagraph';
-import { CustomListItem } from './extensions/CustomListItem';
-import { CustomBulletList } from './extensions/CustomBulletList';
 import { MoveHandle } from './extensions/MoveHandle';
 import { TextSelection } from '@tiptap/pm/state';
 
@@ -17,8 +13,6 @@ interface RichTextEditorProps {
     content: string;
     onChange: (content: string) => void;
     placeholder?: string;
-    showComments?: boolean;
-    onAddComment?: () => void;
     onFormat?: () => void;
     onDelete?: () => void;
 }
@@ -27,56 +21,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     content,
     onChange,
     placeholder = 'Start typing...',
-    showComments = false,
-    onAddComment,
     onDelete,
     onFormat,
 }) => {    
     const editor = useEditor({
         extensions: [
             StarterKit,
-            CustomBulletList,
-            CustomListItem,
             EditorParagraph,
             ChevronPlaceholder,
             MoveHandle.configure({
                 onDelete,
-                onFormat,
-                onMove: (direction: string, node: any, pos: number, state: any) => {
-                    if (!editor) return;
-                    const doc = state.doc;
-                    const paragraphs: Array<{ node: any; pos: number }> = [];
-                    doc.descendants((n: any, p: number) => {
-                        if (n.type.name === 'paragraph') paragraphs.push({ node: n, pos: p });
-                    });
-                    const idx = paragraphs.findIndex(item => item.pos === pos);
-                    if (idx === -1) return;
-                    let targetIdx = direction === 'up' ? idx - 1 : idx + 1;
-                    if (targetIdx < 0 || targetIdx >= paragraphs.length) return;
-                    const from = paragraphs[idx].pos;
-                    const to = paragraphs[idx].pos + paragraphs[idx].node.nodeSize;
-                    // Remove the paragraph
-                    editor.commands.deleteRange({ from, to });
-                    // Recalculate paragraphs after deletion
-                    const newParagraphs: Array<{ node: any; pos: number }> = [];
-                    editor.state.doc.descendants((n: any, p: number) => {
-                        if (n.type.name === 'paragraph') newParagraphs.push({ node: n, pos: p });
-                    });
-                    let insertPos: number;
-                    if (direction === 'up') {
-                        insertPos = newParagraphs[targetIdx].pos;
-                    } else {
-                        // If moving to the bottom, insert at end of doc
-                        if (targetIdx >= newParagraphs.length) {
-                            insertPos = state.doc.content.size;
-                        } else {
-                            // After deletion, the next paragraph is now at idx (not targetIdx)
-                            if (idx >= newParagraphs.length) return; // can't move down from last
-                            insertPos = newParagraphs[idx].pos + newParagraphs[idx].node.nodeSize;
-                        }
-                    }
-                    editor.commands.insertContentAt(insertPos, node.toJSON());
-                }
+                onFormat
             })
         ],
         content,
@@ -301,11 +256,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
     return (
         <div className="rich-text-editor-container">
-            <EditorToolbar
-                editor={editor}
-                showComments={showComments}
-                onAddComment={onAddComment}
-            />
             <section onDragOver={handleDragOver} aria-label="Editor content" style={{ position: 'relative' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '2px 0' }}>
                     <DragHandle editor={editor}>

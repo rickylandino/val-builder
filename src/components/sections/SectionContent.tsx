@@ -1,8 +1,6 @@
 import { RichTextEditor } from '../editor/RichTextEditor';
 import { CardLibrary } from '../cards/CardLibrary';
 import { useState, useEffect } from 'react';
-import type { CommentThread } from '../../types/comments';
-import { CommentSidebar } from '../comments/CommentSidebar';
 import type { ValDetail } from '@/types/api';
 import { FormatOptionsDialog } from '../val-builder/FormatOptionsDialog';
 import { generateHtmlContent, useSectionChanges } from '@/hooks/useSectionChanges';
@@ -40,8 +38,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
     readOnly = false,
     valId
 }) => {
-    const [threads, setThreads] = useState<CommentThread[]>([]);
-    const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
     const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
     const [formatDialogOpen, setFormatDialogOpen] = useState(false);
 
@@ -57,99 +53,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
 
     const selectedDetail = localSectionDetails.find(d => d.valDetailsId === selectedDetailId) || null;
 
-    const handleCreateCommentThread = () => {
-        const threadId = `thread-${Date.now()}`;
-        const newThread: CommentThread = {
-            id: threadId,
-            comments: [{
-                id: `comment-${Date.now()}`,
-                threadId,
-                content: 'New comment',
-                author: {
-                    id: 'user-1',
-                    name: 'Current User',
-                },
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            }],
-            resolved: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        setThreads([...threads, newThread]);
-        setActiveThreadId(threadId);
-    };
-
-    const handleCreateQuickComment = (content: string) => {
-        const threadId = `thread-${Date.now()}`;
-        const newThread: CommentThread = {
-            id: threadId,
-            comments: [{
-                id: `comment-${Date.now()}`,
-                threadId,
-                content,
-                author: {
-                    id: 'user-1',
-                    name: 'Current User',
-                },
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString(),
-            }],
-            resolved: false,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        setThreads([...threads, newThread]);
-        setActiveThreadId(threadId);
-    };
-
-    const handleAddComment = (threadId: string, content: string) => {
-        const newComment = {
-            id: `comment-${Date.now()}`,
-            threadId,
-            content,
-            author: {
-                id: 'user-1',
-                name: 'Current User',
-            },
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        };
-
-        setThreads(threads.map(thread =>
-            thread.id === threadId
-                ? { ...thread, comments: [...thread.comments, newComment], updatedAt: new Date().toISOString() }
-                : thread
-        ));
-    };
-
-    const handleResolveThread = (threadId: string) => {
-        setThreads(threads.map(thread =>
-            thread.id === threadId
-                ? { ...thread, resolved: !thread.resolved, updatedAt: new Date().toISOString() }
-                : thread
-        ));
-    };
-
-    const handleDeleteComment = (threadId: string, commentId: string) => {
-        setThreads(threads.map(thread => {
-            if (thread.id === threadId) {
-                const updatedComments = thread.comments.filter(c => c.id !== commentId);
-                if (updatedComments.length === 0) {
-                    return null;
-                }
-                return { ...thread, comments: updatedComments };
-            }
-            return thread;
-        }).filter(Boolean) as CommentThread[]);
-    };
-
-    const handleThreadClick = (threadId: string) => {
-        setActiveThreadId(threadId === activeThreadId ? null : threadId);
-    };
-
     const handleSaveFormat = (updates: Partial<ValDetail>) => {
         if (selectedDetail && onUpdateValDetail) {
             const updatedDetail: ValDetail = {
@@ -163,10 +66,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
             }
             onUpdateValDetail(updatedDetail);
             setFormatDialogOpen(false);
-            // valDetailsService.update(updatedDetail.valDetailsId, updatedDetail).then(() => {
-            //     onUpdateValDetail(updatedDetail);
-            //     setFormatDialogOpen(false);
-            // });
         }
     };
 
@@ -233,8 +132,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                             content={editorContent}
                             onChange={onEditorContentChange}
                             placeholder="Drag cards here or start typing..."
-                            showComments={true}
-                            onAddComment={handleCreateCommentThread}
                             readOnly={mode === 'preview-sections' || mode === 'preview-final' || readOnly}
                             // @ts-ignore: Accepts (node, pos, state) from FormatHandle extension
                             onFormat={handleFormatIconClick}
@@ -243,19 +140,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                         />
                     </div>
                 </div>
-
-                {/* <div className="flex flex-col w-1/5 min-w-[180px] max-w-[260px] bg-white border-l border-gray-200 p-4">
-                    <CommentSidebar
-                        editor={null}
-                        threads={threads}
-                        activeThreadId={activeThreadId}
-                        onAddComment={handleAddComment}
-                        onCreateThread={handleCreateQuickComment}
-                        onResolveThread={handleResolveThread}
-                        onDeleteComment={handleDeleteComment}
-                        onThreadClick={handleThreadClick}
-                    />
-                </div> */}
             </div>
 
             <FormatOptionsDialog

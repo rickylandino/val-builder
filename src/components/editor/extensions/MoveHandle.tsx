@@ -8,7 +8,7 @@ export const MoveHandle = Node.create({
     addOptions() {
         return {
             HTMLAttributes: {},
-            onMove: null, // callback for move actions
+            // onMove removed, no longer needed
         };
     },
 
@@ -59,32 +59,7 @@ export const MoveHandle = Node.create({
                                     };
                                     container.appendChild(format);
 
-                                    // // Up arrow
-                                    // const up = document.createElement('button');
-                                    // up.className = 'move-handle move-handle-up';
-                                    // up.innerHTML = '▲';
-                                    // up.title = 'Move up';
-                                    // up.onclick = (e) => {
-                                    //     e.preventDefault();
-                                    //     e.stopPropagation();
-                                    //     if (typeof (this as any).options.onMove === 'function') {
-                                    //         (this as any).options.onMove('up', node, pos, state);
-                                    //     }
-                                    // };
-                                    // container.appendChild(up);
-                                    // // Down arrow
-                                    // const down = document.createElement('button');
-                                    // down.className = 'move-handle move-handle-down';
-                                    // down.innerHTML = '▼';
-                                    // down.title = 'Move down';
-                                    // down.onclick = (e) => {
-                                    //     e.preventDefault();
-                                    //     e.stopPropagation();
-                                    //     if (typeof (this as any).options.onMove === 'function') {
-                                    //         (this as any).options.onMove('down', node, pos, state);
-                                    //     }
-                                    // };
-                                    // container.appendChild(down);
+                                    // Up/down arrow move handle logic removed as requested.
 
                                     // Add a transparent spacer to allow cursor placement after icons
                                     const spacer = document.createElement('span');
