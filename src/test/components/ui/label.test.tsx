@@ -4,7 +4,7 @@ import { Label } from '../../../components/ui/label';
 
 describe('Label', () => {
   it('renders label with text', () => {
-    render(<Label>Label Text</Label>);
+    render(<Label htmlFor='label'>Label Text</Label>);
     expect(screen.getByText('Label Text')).toBeInTheDocument();
   });
 });

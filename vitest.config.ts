@@ -14,12 +14,9 @@ export default defineConfig({
       reporter: ['text', 'json', 'html', 'lcov'],
       exclude: [
         'node_modules/',
-        'src/test/',
-        '**/*.test.{ts,tsx}',
         '**/*.config.{ts,js}',
         'src/main.tsx',
         'src/App.tsx',
-        '**/test/**',
         '**/config/**',
         'coverage/'
       ],
