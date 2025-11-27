@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import { ValPreview } from '../../../components/val-builder/ValPreview';
+import { ValPreview } from '@/components/val-builder/ValPreview';
 import type { ValDetail, ValSection } from '@/types/api';
 
 const partialValSection: Partial<ValSection> = {

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { FormatOptionsDialog } from '../../../components/val-builder/FormatOptionsDialog';
+import { FormatOptionsDialog } from '@/components/val-builder/FormatOptionsDialog';
 import { mockValDetail } from './test-data';
 
 describe('FormatOptionsDialog', () => {

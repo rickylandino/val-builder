@@ -43,6 +43,9 @@ export const useCreateValDetail = () => {
       // Invalidate queries to refetch the updated data
       void queryClient.invalidateQueries({ queryKey: ['valDetails', variables.valId] });
     },
+    onError: (error: Error) => {
+      return error;
+    },
   });
 };
 
@@ -58,6 +61,9 @@ export const useUpdateValDetail = () => {
     onSuccess: (data) => {
       // Invalidate queries to refetch the updated data
       void queryClient.invalidateQueries({ queryKey: ['valDetails', data.valId] });
+    },
+    onError: (error: Error) => {
+      return error;
     },
   });
 };
@@ -75,6 +81,9 @@ export const useDeleteValDetail = () => {
       // Invalidate queries to refetch the updated data
       void queryClient.invalidateQueries({ queryKey: ['valDetails', variables.valId] });
     },
+    onError: (error: Error) => {
+      return error;
+    },
   });
 };
 
@@ -91,6 +100,9 @@ export const useBatchUpdateValDetails = () => {
       // Invalidate queries to refetch the updated data
       void queryClient.invalidateQueries({ queryKey: ['valDetails', variables.valId] });
     },
+    onError: (error: Error) => {
+      return error;
+    },
   });
 };
 
@@ -106,6 +118,9 @@ export const useSaveValChanges = () => {
     onSuccess: (_, variables) => {
       // Invalidate queries to refetch all the updated data
       void queryClient.invalidateQueries({ queryKey: ['valDetails', variables.valId] });
+    },
+    onError: (error: Error) => {
+      return error;
     },
   });
 };

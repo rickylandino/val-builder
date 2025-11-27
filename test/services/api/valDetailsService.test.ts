@@ -11,7 +11,7 @@ vi.mock('@/services/api/client', () => ({
 
 import { apiClient } from '@/services/api/client';
 import { valDetailsService } from '@/services/api/valDetailsService';
-import { mockValDetail } from '@/test/components/val-builder/test-data';
+import { mockValDetail } from '../../components/val-builder/test-data';
 
 const mockDetail = { valDetailsId: 'abc', valId: 1, groupId: 2, groupContent: 'A', displayOrder: 1 };
 const mockDetails = [mockDetail];

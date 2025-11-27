@@ -23,5 +23,8 @@ export function useCreateValHeader() {
         queryClient.invalidateQueries({ queryKey: ['valHeaders', variables.planId] });
       }
     },
+    onError: (error: Error) => {
+      return error;
+    },
   });
 }

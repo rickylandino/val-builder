@@ -19,5 +19,8 @@ export const useCreateCompany = () => {
       // Invalidate and refetch companies list
       queryClient.invalidateQueries({ queryKey: ['companies'] });
     },
+    onError: (error: Error) => {
+      return error;
+    },
   });
 };

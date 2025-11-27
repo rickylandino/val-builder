@@ -16,5 +16,8 @@ export function useCreateCompanyPlan(companyId: number | null) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['companyPlans', companyId] });
     },
+    onError: (error: Error) => {
+      return error;
+    },
   });
 }
