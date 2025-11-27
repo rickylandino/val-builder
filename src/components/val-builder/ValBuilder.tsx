@@ -10,7 +10,6 @@ import { useAllValDetails, useSaveValChanges } from '@/hooks/api/useValDetails';
 import { useSectionChanges } from '@/hooks/useSectionChanges';
 import { valPdfService } from '@/services/api/valPdfService';
 import type { ValHeader, ValDetail } from '@/types/api';
-import { ValDetailManagerDialog } from './ValDetailManagerDialog';
 
 type ViewMode = 'edit' | 'preview-sections' | 'preview-final';
 
@@ -18,7 +17,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
     const { data: valSections, isLoading: sectionsLoading, error: sectionsError } = useValSections();
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [mode, setMode] = useState<ViewMode>('edit');
-    const [managerOpen, setManagerOpen] = useState(false);
 
     // Create sections array from API data
     const sections = useMemo(() =>
@@ -103,10 +101,10 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
     const handleSectionChange = (section: string) => {
         const index = sections.indexOf(section);
-        if (index !== -1) {
-            setCurrentSectionIndex(index);
-        } else {
+        if (index === -1) {
             console.warn('Section not found in sections array:', section);
+        } else {
+            setCurrentSectionIndex(index);
         }
     };
 
@@ -179,17 +177,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
         }
     };
 
-    // Add a refresh handler to refetch section details
-    const handleRefreshSection = async () => {
-        if (!valHeader.valId || !currentGroupId) return;
-        // Optionally, you can use your useAllValDetails hook or a direct API call
-        // For now, just reload the page or trigger a refetch in your data layer
-        // If using SWR or React Query, you can call mutate or refetch here
-        // Example: await refetchAllValDetails();
-        // For a simple demo, force a reload:
-        window.location.reload();
-    };
-
     const isDirty = hasChanges();
     const isPreviewMode = mode === 'preview-sections' || mode === 'preview-final';
 
@@ -209,6 +196,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                 <select
                     className="border rounded px-2 py-1 text-sm bg-white text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     value={mode}
+                    aria-label="View Mode"
                     onChange={e => setMode(e.target.value as ViewMode)}
                 >
                     <option value="edit">Edit</option>
@@ -262,14 +250,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                 />
             )}
 
-            <ValDetailManagerDialog
-                open={managerOpen}
-                onClose={() => setManagerOpen(false)}
-                sectionDetails={currentSectionDetails}
-                sectionName={currentSection}
-                onRefreshSection={handleRefreshSection}
-            />
-
             <footer className="bg-background px-6 py-4 border-t border-border flex justify-between items-center gap-3 shadow-[0_-2px_4px_rgba(0,0,0,0.05)]">
                 <div className="flex items-center gap-2">
                     {isDirty && (
@@ -280,12 +260,13 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                     )}
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="secondary">
+                    <Button variant="secondary" data-testid="cancel-btn">
                         Cancel
                     </Button>
                     <Button
                         variant="secondary"
                         onClick={handleGeneratePdf}
+                        data-testid="print-pdf-btn"
                     >
                         Print PDF
                     </Button>
@@ -293,6 +274,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                         variant="default"
                         onClick={handleSave}
                         disabled={!isDirty || saveChanges.isPending}
+                        data-testid="save-btn"
                     >
                         {saveChanges.isPending ? 'Saving...' : 'Save'}
                     </Button>

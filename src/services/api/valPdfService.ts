@@ -63,7 +63,7 @@ export const valPdfService = {
     
     document.body.appendChild(link);
     link.click();
-    document.body.removeChild(link);
+    link.remove();
     
     // Cleanup
     URL.revokeObjectURL(url);

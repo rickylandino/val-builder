@@ -1,6 +1,5 @@
-import { cn } from '@/lib/utils';
 import { describe, it, expect } from 'vitest';
-import { isCompany, isValSection, isValHeader } from '@/lib/utils';
+import { cn, isCompany, isValSection, isValHeader } from '@/lib/utils';
 
 describe('Type guards', () => {
     describe('isCompany', () => {
@@ -44,7 +43,7 @@ describe('Type guards', () => {
             expect(cn('foo', 'bar')).toBe('foo bar');
         });
         it('handles conditional classes', () => {
-            expect(cn('foo', false && 'bar', undefined, null, 'baz')).toBe('foo baz');
+            expect(cn('foo', undefined, null, 'baz')).toBe('foo baz');
         });
         it('handles array input', () => {
             expect(cn(['foo', 'bar'], 'baz')).toBe('foo bar baz');

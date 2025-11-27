@@ -1,6 +1,20 @@
+
+// Table is a reusable component. Table headers should be provided by the consumer, not here. This suppresses Sonar S5256. //NOSONAR
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
+/**
+ * Table is a reusable component. Table headers (<TableHeader> or <th>) should be provided by the consumer.
+ * Example:
+ * <Table>
+ *   <TableHeader>
+ *     <TableRow>
+ *       <TableHead>Header</TableHead>
+ *     </TableRow>
+ *   </TableHeader>
+ *   <TableBody>...</TableBody>
+ * </Table>
+ */
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>

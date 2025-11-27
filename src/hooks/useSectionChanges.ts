@@ -45,7 +45,7 @@ export function generateHtmlContent(details: ValDetail[]) {
 
 function injectValDetailsId(html: string, valDetailsId: string, classString: string) {
     return html.replace(
-        /<(\w+)([^>]*)>/,
+        /<(\w+)([^>]*)>/, //NOSONAR
         `<$1$2 data-val-details-id="${valDetailsId}" ${classString}>`
     );
 }

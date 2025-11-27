@@ -20,14 +20,14 @@ export const Header: React.FC<HeaderProps> = ({
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
     const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return "";
+    if (Number.isNaN(d.getTime())) return "";
     return d.toISOString().slice(0, 10);
   };
   const formattedStart = formatDate(planYearStart);
   const formattedEnd = formatDate(planYearEnd);
 
   return (
-    <header className="bg-primary text-primary-foreground px-6 py-4 shadow-md">
+    <header className="bg-primary text-primary-foreground px-6 py-4 shadow-md" data-testid="header">
       <div className="flex justify-between items-center gap-6 flex-wrap">
         <div className="flex gap-8 flex-1 flex-wrap">
           <div className="flex flex-col gap-1">

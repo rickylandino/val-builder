@@ -43,6 +43,18 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    // If rendering as a button, add role and aria-label for accessibility
+    if (!asChild) {
+      return (
+        <button
+          className={cn(buttonVariants({ variant, size, className }))}
+          ref={ref}
+          aria-label={typeof props.children === 'string' ? props.children : undefined}
+          {...props}
+        />
+      )
+    }
+    // Otherwise, render as Slot
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}

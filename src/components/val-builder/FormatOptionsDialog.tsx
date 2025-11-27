@@ -65,7 +65,10 @@ export const FormatOptionsDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px]" aria-describedby="format-options-desc">
+        <div id="format-options-desc" style={{ display: 'none' }}>
+            Edit formatting options for the value.
+        </div>
         <DialogHeader>
           <DialogTitle>Format Options</DialogTitle>
         </DialogHeader>

@@ -33,13 +33,13 @@ export const ValDetailRenderer = ({ detail, index }: ValDetailRendererProps) => 
   const highlightChevrons = (html: string) => {
     if (!html) return '';
     // Remove any existing chevron-placeholder spans
-    let cleanHtml = html.replace(/<span class="chevron-placeholder"[^>]*>(.*?)<\/span>/g, '$1');
+    let cleanHtml = html.replaceAll(/<span class="chevron-placeholder"[^>]*>(.*?)<\/span>/g, '$1');
     // Replace both HTML entities and raw chevrons
     cleanHtml = cleanHtml
-      .replaceAll(/(&lt;&lt;|&#60;&#60;|&#x3C;&#x3C;|<<)\s*(.+?)\s*(&gt;&gt;|&#62;&#62;|&#x3E;&#x3E;|>>)/g, (_, open, content, close) => {
+      .replaceAll(/(&lt;&lt;|&#60;&#60;|&#x3C;&#x3C;|<<)\s*(.+?)\s*(&gt;&gt;|&#62;&#62;|&#x3E;&#x3E;|>>)/g, (_, open, content, close) => { //NOSONAR
         return `<span class="chevron-placeholder" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
       })
-      .replaceAll(/(<<)\s*(.+?)\s*(>>)/g, (_, open, content, close) => {
+      .replaceAll(/(<<)\s*(.+?)\s*(>>)/g, (_, open, content, close) => { //NOSONAR
         return `<span class="chevron-placeholder" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
       });
     return cleanHtml;

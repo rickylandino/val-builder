@@ -30,22 +30,31 @@ const generateRandomCompany = (): Omit<CreateCompany, 'companyId'> => {
   ];
   const states = ['NY', 'CA', 'IL', 'TX', 'AZ', 'PA', 'FL', 'OH', 'NC', 'GA'];
 
-  const randomCompanyName = companies[Math.floor(Math.random() * companies.length)];
-  const randomStreet = streets[Math.floor(Math.random() * streets.length)];
-  const randomCity = cities[Math.floor(Math.random() * cities.length)];
-  const randomState = states[Math.floor(Math.random() * states.length)];
-  const randomNumber = Math.floor(Math.random() * 9000) + 1000;
+  // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+  const randomCompanyName = companies[Math.floor(Math.random() * companies.length)]; //NOSONAR
+  // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+  const randomStreet = streets[Math.floor(Math.random() * streets.length)]; //NOSONAR
+  // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+  const randomCity = cities[Math.floor(Math.random() * cities.length)]; //NOSONAR
+  // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+  const randomState = states[Math.floor(Math.random() * states.length)]; //NOSONAR
+  // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+  const randomNumber = Math.floor(Math.random() * 9000) + 1000; //NOSONAR
 
   return {
     name: `${randomCompanyName} ${randomNumber}`,
     mailingName: `${randomCompanyName} ${randomNumber} Inc.`,
     street1: `${randomNumber} ${randomStreet}`,
-    street2: Math.random() > 0.5 ? `Suite ${Math.floor(Math.random() * 900) + 100}` : null,
+    // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+    street2: Math.random() > 0.5 ? `Suite ${Math.floor(Math.random() * 900) + 100}` : null, //NOSONAR
     city: randomCity,
     state: randomState,
-    zip: `${Math.floor(Math.random() * 90000) + 10000}`,
-    phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`,
-    fax: Math.random() > 0.5 ? `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}` : null,
+    // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+    zip: `${Math.floor(Math.random() * 90000) + 10000}`, //NOSONAR  
+    // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+    phone: `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}`, //NOSONAR
+    // Safe usage: Math.random() is only used for mock/test data, not for security-sensitive values.
+    fax: Math.random() > 0.5 ? `(${Math.floor(Math.random() * 900) + 100}) ${Math.floor(Math.random() * 900) + 100}-${Math.floor(Math.random() * 9000) + 1000}` : null, //NOSONAR
   };
 };
 

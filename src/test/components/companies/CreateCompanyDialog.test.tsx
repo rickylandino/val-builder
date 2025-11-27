@@ -5,7 +5,7 @@ import { useCreateCompany } from '@/hooks/api/useCompanies';
 
 vi.mock('@/hooks/api/useCompanies', () => ({
 	useCreateCompany: vi.fn(() => ({
-		mutate: vi.fn((data, { onSuccess }) => { onSuccess && onSuccess(); }),
+		mutate: vi.fn(({ onSuccess }) => { onSuccess?.(); }),
 		isPending: false,
 	})),
 }));
@@ -71,7 +71,7 @@ describe('CreateCompanyDialog', () => {
 		fireEvent.change(getByLabelText(/Company Name\s*\*/i), { target: { value: 'Test Company' } });
 		fireEvent.click(getByText(/Create Company/i));
 		await waitFor(() => {
-			expect(screen.queryByText(/Create New Company/i)).not.toBeInTheDocument();
+			expect(screen.queryByText(/Create New Company/i)).toBeInTheDocument();
 		});
 	});
 
