@@ -17,13 +17,165 @@ interface RichTextEditorProps {
     onDelete?: () => void;
 }
 
+interface ParagraphInfo {
+    node: any;
+    pos: number;
+    valDetailsId: string;
+}
+
+// Helper: Clean up drop indicators
+function cleanupDropIndicators() {
+    setTimeout(() => {
+        document.querySelectorAll('.drop-indicator').forEach(el => el.classList.remove('drop-indicator'));
+    }, 0);
+}
+
+// Helper: Collect all paragraphs from document
+function collectParagraphs(doc: any): ParagraphInfo[] {
+    const paragraphs: ParagraphInfo[] = [];
+    doc.descendants((n: any, p: number) => {
+        if (n.type.name === 'paragraph') {
+            paragraphs.push({ node: n, pos: p, valDetailsId: n.attrs.valDetailsId });
+        }
+    });
+    return paragraphs;
+}
+
+// Helper: Find target index for drop position
+function findTargetIndex(paragraphs: ParagraphInfo[], dropPos: number): number {
+    for (let i = 0; i < paragraphs.length; i++) {
+        if (dropPos <= paragraphs[i].pos) {
+            return i;
+        }
+    }
+    return paragraphs.length;
+}
+
+// Helper: Calculate final target index after deletion
+function calculateFinalTargetIndex(draggedIdx: number, targetIdx: number, maxLength: number): number {
+    let finalIdx = draggedIdx < targetIdx ? targetIdx - 1 : targetIdx;
+    return Math.max(0, Math.min(finalIdx, maxLength));
+}
+
+// Helper: Calculate insert position
+function calculateInsertPosition(paragraphs: ParagraphInfo[], targetIdx: number, docSize: number): number {
+    if (targetIdx >= paragraphs.length) {
+        return docSize;
+    }
+    return paragraphs[targetIdx].pos;
+}
+
+// Helper: Set selection after move
+function setSelectionAfterMove(editor: any) {
+    setTimeout(() => {
+        const newDoc = editor.state.doc;
+        const movedIdx = newDoc.childCount - 1;
+        const movedNode = newDoc.child(movedIdx);
+        if (movedNode) {
+            const pos = newDoc.content.size - movedNode.nodeSize + 1;
+            editor.commands.setTextSelection(pos);
+        }
+    }, 0);
+}
+
+// Helper: Handle internal paragraph move
+function handleInternalMove(slice: any, editor: any, dropPos: any): boolean {
+    if (!dropPos || !editor) {
+        return false;
+    }
+    
+    const isSingleParagraph = slice.content.childCount === 1 && 
+                              slice.content.firstChild?.type?.name === 'paragraph';
+    if (!isSingleParagraph) {
+        return false;
+    }
+
+    editor.chain().focus();
+    const doc = editor.state.doc;
+    const paragraphs = collectParagraphs(doc);
+    
+    const draggedValDetailsId = slice.content.firstChild?.attrs.valDetailsId;
+    if (!draggedValDetailsId) {
+        return false;
+    }
+    
+    const draggedIdx = paragraphs.findIndex(item => item.valDetailsId === draggedValDetailsId);
+    if (draggedIdx === -1) {
+        return false;
+    }
+
+    const targetIdx = findTargetIndex(paragraphs, dropPos.pos);
+    if (draggedIdx === targetIdx) {
+        return false;
+    }
+
+    // Remove dragged paragraph
+    const from = paragraphs[draggedIdx].pos;
+    const to = from + paragraphs[draggedIdx].node.nodeSize;
+    editor.commands.deleteRange({ from, to });
+
+    // Recalculate and insert
+    const newParagraphs = collectParagraphs(editor.state.doc);
+    const finalTargetIdx = calculateFinalTargetIndex(draggedIdx, targetIdx, newParagraphs.length);
+    const insertPos = calculateInsertPosition(newParagraphs, finalTargetIdx, editor.state.doc.content.size);
+    
+    editor.commands.insertContentAt(insertPos, slice.content.firstChild.toJSON());
+    setSelectionAfterMove(editor);
+    
+    return true;
+}
+
+// Helper: Handle external drop
+function handleExternalDrop(event: any, editor: any, dropPos: any): boolean {
+    if (!dropPos || !editor) {
+        return false;
+    }
+
+    const html = event.dataTransfer?.getData('text/html');
+    const plainText = event.dataTransfer?.getData('text/plain');
+    const contentToInsert = (html || plainText || '').trim();
+    
+    if (!contentToInsert) {
+        return false;
+    }
+
+    editor.chain().focus().insertContentAt(dropPos.pos, `<p data-val-details-id="${uuidv4()}">${contentToInsert}</p>`).run();
+    return true;
+}
+
+// Helper: Create drop handler with editor reference
+function createDropHandler(getEditor: () => any) {
+    return (view: any, event: any, slice: any, moved: boolean): boolean => {
+        cleanupDropIndicators();
+        const editor = getEditor();
+
+        if (moved && slice) {
+            event.preventDefault();
+            event.stopPropagation();
+            const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+            return handleInternalMove(slice, editor, pos);
+        }
+
+        if (!moved) {
+            event.preventDefault();
+            event.stopPropagation();
+            const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+            return handleExternalDrop(event, editor, pos);
+        }
+
+        return false;
+    };
+}
+
 export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     content,
     onChange,
     placeholder = 'Start typing...',
     onDelete,
     onFormat,
-}) => {    
+}) => {
+    let editorInstance: any = null;
+    
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -38,6 +190,9 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         editable: true,
         onUpdate: ({ editor }) => {
             onChange(editor.getHTML());
+        },
+        onCreate: ({ editor }) => {
+            editorInstance = editor;
         },
         editorProps: {
             attributes: {
@@ -62,131 +217,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 }
                 return false;
             },
-            handleDrop: (view, event, slice, moved) => {
-                interface ParagraphInfo {
-                    node: any;
-                    pos: number;
-                    valDetailsId: string;
-                }
-
-                // Clean up drop indicator
-                setTimeout(() => {
-                    document.querySelectorAll('.drop-indicator').forEach(el => el.classList.remove('drop-indicator'));
-                }, 0);
-
-                // Enhanced drag-and-drop for paragraphs (internal move)
-                if (moved && slice) {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
-                    if (!pos || !editor) {
-                        return true;
-                    }
-
-                    // Only handle single paragraph moves for bulletproof UX
-                    if (
-                        slice.content.childCount === 1 &&
-                        slice.content.firstChild?.type?.name === 'paragraph'
-                    ) {
-                        // Always focus editor and recalculate state for bulletproof behavior
-                        editor?.chain().focus();
-                        const doc = editor.state.doc;
-                        // Find all paragraphs and their valDetailsId
-                        
-                        const paragraphs: ParagraphInfo[] = [];
-                        doc.descendants((n, p) => {
-                            if (n.type.name === 'paragraph') {
-                                paragraphs.push({ node: n, pos: p, valDetailsId: n.attrs.valDetailsId });
-                            }
-                        });
-                        
-                        // Find the dragged paragraph by valDetailsId
-                        const draggedValDetailsId = slice.content.firstChild ? slice.content.firstChild.attrs.valDetailsId : undefined;
-                        if (!draggedValDetailsId) return true;
-                        const draggedIdx = paragraphs.findIndex(item => item.valDetailsId === draggedValDetailsId);
-                        if (draggedIdx === -1) return true;
-
-                        let targetIdx = 0;
-                        for (let i = 0; i < paragraphs.length; i++) {
-                            if (pos.pos <= paragraphs[i].pos) {
-                                targetIdx = i;
-                                break;
-                            }
-                            if (i === paragraphs.length - 1) {
-                                targetIdx = paragraphs.length;
-                            }
-                        }
-                        // Prevent no-op (only if dropping onto original index)
-                        if (draggedIdx === targetIdx) return true;
-                        // Remove dragged paragraph
-                        const from = paragraphs[draggedIdx].pos;
-                        const to = from + paragraphs[draggedIdx].node.nodeSize;
-                        editor.commands.deleteRange({ from, to });
-                        // After deletion, adjust targetIdx if moving down
-                        let finalTargetIdx = targetIdx;
-                        if (draggedIdx < targetIdx) {
-                            finalTargetIdx = targetIdx - 1;
-                        }
-                        // Clamp finalTargetIdx to valid range
-                        if (finalTargetIdx < 0) finalTargetIdx = 0;
-                        // Recalculate paragraphs after deletion
-
-                        const newParagraphs: ParagraphInfo[] = [];
-                        editor.state.doc.descendants((n, p) => {
-                            if (n.type.name === 'paragraph') newParagraphs.push({ node: n, pos: p, valDetailsId: n.attrs.valDetailsId });
-                        });
-                        if (finalTargetIdx > newParagraphs.length) finalTargetIdx = newParagraphs.length;
-                        // Insert at new position
-                        let insertPos;
-                        if (finalTargetIdx >= newParagraphs.length) {
-                            insertPos = editor.state.doc.content.size;
-                        } else {
-                            insertPos = newParagraphs[finalTargetIdx].pos;
-                        }
-                        editor.commands.insertContentAt(insertPos, slice.content.firstChild.toJSON());
-                        // Set selection to moved node to avoid selection bugs
-                        setTimeout(() => {
-                            const newDoc = editor.state.doc;
-                            const movedIdx = newDoc.childCount - 1;
-                            const movedNode = newDoc.child(movedIdx);
-                            if (movedNode) {
-                                const pos = newDoc.content.size - movedNode.nodeSize + 1;
-                                editor.commands.setTextSelection(pos);
-                            }
-                        }, 0);
-                        return true;
-                    }
-                    // Fallback to default for other node types
-                    return false;
-                }
-
-                // External drop: moved=false means it's from outside the editor
-                if (!moved) {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    const html = event.dataTransfer?.getData('text/html');
-                    const plainText = event.dataTransfer?.getData('text/plain');
-
-                    const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
-                    if (pos && editor) {
-                        // Get the content, preferring HTML but falling back to plain text
-                        const contentToInsert = (html || plainText || '').trim();
-
-                        // Skip if empty
-                        if (!contentToInsert) {
-                            return true;
-                        }
-
-                        // Insert content as a new paragraph on its own line
-                        editor.chain().focus().insertContentAt(pos.pos, `<p data-val-details-id="${uuidv4()}">${contentToInsert}</p>`).run();
-                        return true;
-                    }
-                }
-
-                return true;
-            },
+            handleDrop: createDropHandler(() => editorInstance),
             handleDOMEvents: {
                 dragover: (view, event) => {
                     event.preventDefault();

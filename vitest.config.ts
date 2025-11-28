@@ -18,7 +18,11 @@ export default defineConfig({
         'src/main.tsx',
         'src/App.tsx',
         '**/config/**',
-        'coverage/'
+        'src/config/**',
+        'coverage/',
+        'test/**',
+        '**/*.test.{ts,tsx}',
+        '**/.github/**',
       ],
     },
   },

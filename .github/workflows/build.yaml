@@ -27,6 +27,6 @@ jobs:
         run: npm run test:coverage -- --run
       
       - name: SonarQube Scan
-        uses: SonarSource/sonarqube-scan-action@v6
+        uses: SonarSource/sonarqube-scan-action@<full-sha>
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}

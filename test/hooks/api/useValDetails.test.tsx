@@ -1,16 +1,42 @@
 
-const mockValDetails = [
-    { id: '1', valId: 1, name: 'Detail 1' },
-    { id: '2', valId: 1, name: 'Detail 2' },
-];
-const mockCreatedDetail = { id: '3', valId: 1, name: 'Detail 3' };
+
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useValDetails, useCreateValDetail, useUpdateValDetail, useSaveValChanges, useDeleteValDetail, useBatchUpdateValDetails } from '@/hooks/api/useValDetails';
 import { valDetailsService } from '@/services/api/valDetailsService';
+import type { ValDetail } from '@/types/api/ValDetail';
 
+const mockValDetails:ValDetail[] = [
+    {
+        valDetailsId: '1',
+        valId: 1,
+        groupContent: 'Detail 1',
+        groupId: 1,
+        displayOrder: 1,
+        bullet: false,
+        indent: 0,
+        bold: false,
+        center: false,
+        blankLineAfter: 0,
+        tightLineHeight: false
+    },
+    {
+        valDetailsId: '2',
+        valId: 1,
+        groupContent: 'Detail 2',
+        groupId: 1,
+        displayOrder: 2,
+        bullet: false,
+        indent: 0,
+        bold: false,
+        center: false,
+        blankLineAfter: 0,
+        tightLineHeight: false
+    },
+];
+const mockCreatedDetail: ValDetail = { valDetailsId: '3', valId: 1, groupContent: 'Detail 3', groupId: 1, displayOrder: 3, bullet: false, indent: 0, bold: false, center: false, blankLineAfter: 0, tightLineHeight: false };
 
 let queryClient: QueryClient;
 
@@ -29,7 +55,7 @@ describe('useUpdateValDetail', () => {
             ),
         });
         act(() => {
-            result.current.mutate({ valDetailsID: '1', valDetail: { name: 'Updated Detail', valId: 1 } });
+            result.current.mutate({ valDetailsID: '1', valDetail: { groupContent: 'Updated Detail', valId: 1 } });
         });
         await waitFor(() => {
             expect(result.current.isSuccess).toBe(true);
@@ -43,12 +69,12 @@ describe('useUpdateValDetail', () => {
             ),
         });
         act(() => {
-            result.current.mutate({ valDetailsID: '1', valDetail: { name: 'Updated Detail', valId: 1 } });
+            result.current.mutate({ valDetailsID: '1', valDetail: { groupContent: 'Updated Detail', valId: 1 } });
         });
         await waitFor(() => {
             expect(result.current.isError).toBe(true);
             expect(result.current.error).toBeInstanceOf(Error);
-            expect(result.current.error.message).toBe("Cannot read properties of undefined (reading 'valId')");
+            expect(result?.current?.error?.message).toBe("Cannot read properties of undefined (reading 'valId')");
         });
     });
 });
@@ -86,7 +112,7 @@ describe('useDeleteValDetail', () => {
         await waitFor(() => {
             expect(result.current.isError).toBe(true);
             expect(result.current.error).toBeInstanceOf(Error);
-            expect(result.current.error.message).toBe('Delete failed');
+            expect(result?.current?.error?.message).toBe('Delete failed');
         });
     });
 });
@@ -123,7 +149,7 @@ describe('useBatchUpdateValDetails', () => {
         await waitFor(() => {
             expect(result.current.isError).toBe(true);
             expect(result.current.error).toBeInstanceOf(Error);
-            expect(result.current.error.message).toBe('Batch update failed');
+            expect(result?.current?.error?.message).toBe('Batch update failed');
         });
     });
 });
@@ -161,7 +187,7 @@ describe('useSaveValChanges', () => {
         await waitFor(() => {
             expect(result.current.isError).toBe(true);
             expect(result.current.error).toBeInstanceOf(Error);
-            expect(result.current.error.message).toBe('Save changes failed');
+            expect(result?.current?.error?.message).toBe('Save changes failed');
         });
     });
 });
@@ -194,7 +220,7 @@ describe('useValDetails hooks', () => {
                 ),
             });
             act(() => {
-                result.current.mutate({ valId: 1, name: 'Detail 3' });
+                result.current.mutate({ valId: 1, groupContent: 'Detail 3', groupId: 1, displayOrder: 3, bullet: false, indent: 0, bold: false, center: false, blankLineAfter: 0, tightLineHeight: false });
             });
             await waitFor(() => {
                 expect(result.current.isSuccess).toBe(true);
@@ -210,12 +236,12 @@ describe('useValDetails hooks', () => {
                 ),
             });
             act(() => {
-                result.current.mutate({ valId: 1, name: 'Detail 3' });
+                result.current.mutate({ valId: 1, groupContent: 'Detail 3', groupId: 1, displayOrder: 3, bullet: false, indent: 0, bold: false, center: false, blankLineAfter: 0, tightLineHeight: false });
             });
             await waitFor(() => {
                 expect(result.current.isError).toBe(true);
                 expect(result.current.error).toBeInstanceOf(Error);
-                expect(result.current.error.message).toBe('Create failed');
+                expect(result?.current?.error?.message).toBe('Create failed');
             });
         });
     });

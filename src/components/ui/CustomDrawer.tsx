@@ -53,7 +53,6 @@ export const CustomDrawer: React.FC<CustomDrawerProps> = ({
           transition: "transform 0.35s cubic-bezier(.4,0,.2,1)",
           pointerEvents: "auto",
         }}
-        onClick={e => e.stopPropagation()}
       >
         {children}
       </div>

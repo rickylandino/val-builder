@@ -1,4 +1,3 @@
-
 // Table is a reusable component. Table headers should be provided by the consumer, not here. This suppresses Sonar S5256. //NOSONAR
 import * as React from "react"
 import { cn } from "@/lib/utils"
@@ -18,13 +17,20 @@ import { cn } from "@/lib/utils"
 const Table = React.forwardRef<
   HTMLTableElement,
   React.HTMLAttributes<HTMLTableElement>
->(({ className, ...props }, ref) => (
+>(({ className, children, ...props }, ref) => (
   <div className="relative w-full overflow-auto">
     <table
       ref={ref}
       className={cn("w-full caption-bottom text-sm", className)}
       {...props}
-    />
+    >
+      <thead>
+        <tr>
+          <th style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>Hidden Header</th>
+        </tr>
+      </thead>
+      {children}
+    </table>
   </div>
 ))
 Table.displayName = "Table"

@@ -53,7 +53,28 @@ describe('useCreateValHeader', () => {
             ),
         });
         act(() => {
-            result.current.mutate({ name: 'Header 3', planId: 1 });
+            result.current.mutate({
+                "planId": 4,
+                "valDescription": "Custom VAL",
+                "valDate": null,
+                "planYearBeginDate": "2026-01-01T00:00:00",
+                "planYearEndDate": "2026-12-31T00:00:00",
+                "recipientName": null,
+                "recipientAddress1": null,
+                "recipientAddress2": null,
+                "recipientCity": null,
+                "recipientState": null,
+                "recipientZip": null,
+                "finalizeDate": null,
+                "finalizedBy": null,
+                "wordDocPath": null,
+                "valstatusId": null,
+                "marginLeftRight": null,
+                "marginTopBottom": null,
+                "fontSize": null,
+                "valYear": 2026,
+                "valQuarter": 1
+            });
         });
         await waitFor(() => {
             expect(result.current.isSuccess).toBe(true);
@@ -69,12 +90,33 @@ describe('useCreateValHeader', () => {
             ),
         });
         act(() => {
-            result.current.mutate({ name: 'Header 3', planId: 1 });
+            result.current.mutate({
+                "planId": 4,
+                "valDescription": "Custom VAL",
+                "valDate": null,
+                "planYearBeginDate": "2026-01-01T00:00:00",
+                "planYearEndDate": "2026-12-31T00:00:00",
+                "recipientName": null,
+                "recipientAddress1": null,
+                "recipientAddress2": null,
+                "recipientCity": null,
+                "recipientState": null,
+                "recipientZip": null,
+                "finalizeDate": null,
+                "finalizedBy": null,
+                "wordDocPath": null,
+                "valstatusId": null,
+                "marginLeftRight": null,
+                "marginTopBottom": null,
+                "fontSize": null,
+                "valYear": 2026,
+                "valQuarter": 1
+            });
         });
         await waitFor(() => {
             expect(result.current.isError).toBe(true);
             expect(result.current.error).toBeInstanceOf(Error);
-            expect(result.current.error.message).toBe('Create failed');
+            expect(result?.current?.error?.message).toBe('Create failed');
         });
     });
 });

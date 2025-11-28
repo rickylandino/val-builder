@@ -79,7 +79,7 @@ describe('useCreateCompanyPlan', () => {
         await waitFor(() => {
             expect(result.current.isError).toBe(true);
             expect(result.current.error).toBeInstanceOf(Error);
-            expect(result.current.error.message).toBe('Create failed');
+            expect(result?.current?.error?.message).toBe('Create failed');
         });
     });
 });

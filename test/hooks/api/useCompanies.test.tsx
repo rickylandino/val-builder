@@ -25,7 +25,7 @@ describe('useCompanies', () => {
     });
 
     it('returns companies data', async () => {
-        companiesService.getAll.mockResolvedValueOnce(mockCompanies);
+        (companiesService.getAll as any).mockResolvedValueOnce(mockCompanies);
         const { result } = renderHook(() => useCompanies(), {
             wrapper: ({ children }) => (
                 <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
@@ -39,14 +39,24 @@ describe('useCompanies', () => {
     });
 
     it('handles error on create', async () => {
-        companiesService.create.mockRejectedValueOnce(new Error('Create failed'));
+        (companiesService.create as any).mockRejectedValueOnce(new Error('Create failed'));
         const { result } = renderHook(() => useCreateCompany(), {
             wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
         });
         let caughtError: Error | null = null;
         await act(async () => {
             try {
-                await result.current.mutateAsync({ name: 'Delta', plan: 'Free' });
+                await result.current.mutateAsync({
+                    "name": "Test Company",
+                    "mailingName": "Mailing Address",
+                    "street1": "Street Address",
+                    "street2": null,
+                    "city": "City Address",
+                    "state": "CT",
+                    "zip": "06074",
+                    "phone": null,
+                    "fax": null
+                });
             } catch (e: unknown) {
                 if (e instanceof Error) {
                     caughtError = e;
@@ -65,26 +75,56 @@ describe('useCreateCompany', () => {
     });
 
     it('creates a company and invalidates queries on success', async () => {
-        companiesService.create.mockResolvedValueOnce({ id: 3, name: 'Gamma', plan: 'Pro' });
+        (companiesService.create as any).mockResolvedValueOnce({ id: 3, name: 'Gamma', plan: 'Pro' });
         const invalidateSpy = vi.spyOn(queryClient, 'invalidateQueries');
         const { result } = renderHook(() => useCreateCompany(), {
             wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
         });
         await act(async () => {
-            await result.current.mutateAsync({ name: 'Gamma', plan: 'Pro' });
+            await result.current.mutateAsync({
+                "name": "Test Company",
+                "mailingName": "Mailing Address",
+                "street1": "Street Address",
+                "street2": null,
+                "city": "City Address",
+                "state": "CT",
+                "zip": "06074",
+                "phone": null,
+                "fax": null
+            });
         });
-        expect(companiesService.create).toHaveBeenCalledWith({ name: 'Gamma', plan: 'Pro' });
+        expect(companiesService.create).toHaveBeenCalledWith({
+                "name": "Test Company",
+                "mailingName": "Mailing Address",
+                "street1": "Street Address",
+                "street2": null,
+                "city": "City Address",
+                "state": "CT",
+                "zip": "06074",
+                "phone": null,
+                "fax": null
+            });
         expect(invalidateSpy).toHaveBeenCalledWith({ queryKey: ['companies'] });
     });
 
     it('handles error on create', async () => {
-        companiesService.create.mockRejectedValueOnce(new Error('Create failed'));
+        (companiesService.create as any).mockRejectedValueOnce(new Error('Create failed'));
         const { result } = renderHook(() => useCreateCompany(), {
             wrapper: ({ children }) => <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>,
         });
         await act(async () => {
             try {
-                await result.current.mutateAsync({ name: 'Delta', plan: 'Free' });
+                await result.current.mutateAsync({
+                    "name": "Test Company",
+                    "mailingName": "Mailing Address",
+                    "street1": "Street Address",
+                    "street2": null,
+                    "city": "City Address",
+                    "state": "CT",
+                    "zip": "06074",
+                    "phone": null,
+                    "fax": null
+                });
             } catch (e) {
                 expect(e).toBeInstanceOf(Error);
             }
