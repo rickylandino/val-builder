@@ -135,36 +135,32 @@ interface SectionState {
     originalDetails: ValDetail[];
 }
 
-export const ValBuilderProvider = ({ children }: { children: React.ReactNode }) => {
+export const ValBuilderProvider = ({ children, initialAllValDetails = [], initialCurrentGroupId = 1, initialValId = 0, initialCurrentDetails, initialEditorContent }: {
+    children: React.ReactNode;
+    initialAllValDetails?: ValDetail[];
+    initialCurrentGroupId?: number;
+    initialValId?: number;
+    initialCurrentDetails?: ValDetail[];
+    initialEditorContent?: string;
+}) => {
     const [changesState, setChangesState] = useState<Record<number, SectionState>>({});
-    const [currentDetails, setCurrentDetails] = useState<ValDetail[]>([]);
-    const [editorContent, setEditorContent] = useState('');
+    const [currentDetails, setCurrentDetails] = useState<ValDetail[]>(initialCurrentDetails ?? []);
+    const [editorContent, setEditorContent] = useState(initialEditorContent ?? '');
     const [lastGroupId, setLastGroupId] = useState(0);
-    const [currentGroupId, setCurrentGroupId] = useState<number>(1);
-    const [valId, setValId] = useState<number>(0);
-    const [allValDetails, setAllValDetails] = useState<ValDetail[]>([]);
-
-    console.log(currentGroupId);
+    const [currentGroupId, setCurrentGroupId] = useState<number>(initialCurrentGroupId);
+    const [valId, setValId] = useState<number>(initialValId);
+    const [allValDetails, setAllValDetails] = useState<ValDetail[]>(initialAllValDetails);
 
     useEffect(() => {
         if (!currentGroupId || allValDetails.length === 0) return;
-
-        // Only process if we're actually switching sections
         if (currentGroupId === lastGroupId) return;
-
         setLastGroupId(currentGroupId);
-
-        // Check if this section is already initialized in state
         const existingSection = changesState[currentGroupId];
-
         if (existingSection) {
-            // Section exists - load its saved state
             setCurrentDetails([...existingSection.details]);
             setEditorContent(generateHtmlContent(existingSection.details));
         } else {
-            // First time seeing this section - initialize from allValDetails filtered by groupID
             const valDetailsForGroup = allValDetails.filter(detail => detail.groupId === currentGroupId);
-            console.log(allValDetails);
             setChangesState(prev => ({
                 ...prev,
                 [currentGroupId]: {
@@ -174,12 +170,10 @@ export const ValBuilderProvider = ({ children }: { children: React.ReactNode }) 
                     originalDetails: [...valDetailsForGroup],
                 },
             }));
-            console.log(valDetailsForGroup);
             setCurrentDetails([...valDetailsForGroup]);
             setEditorContent(generateHtmlContent(valDetailsForGroup));
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentGroupId, allValDetails]); // Trigger on section change or data load
+    }, [currentGroupId, allValDetails]);
 
     const convertEditorContentToDetails = useCallback((html: string): ValDetail[] => {
         return parseEditorContentToDetails(html, currentDetails, valId);

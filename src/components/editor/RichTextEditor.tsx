@@ -49,8 +49,6 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     const [debugOpen, setDebugOpen] = useState(false);
     const editorInstanceRef = useRef<any>(null);
 
-    console.log(currentDetails);
-
     const editor = useEditor({
         extensions: [
             StarterKit.configure({ paragraph: false }),
@@ -129,7 +127,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 if (isMovedAndSliced(moved, slice)) {
                     event.preventDefault();
                     event.stopPropagation();
+                    console.log(event.clientX);
+                    console.log(event.clientY);
                     const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
+                    console.log(pos)
 
                     const doc = editor.state.doc;
                     const paragraphs = collectParagraphs(doc);
@@ -203,6 +204,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '2px 0' }}>
                     <DragHandle editor={editor}>
                         <div
+                            data-testid="drag-handle"
                             className="drag-handle-icon"
                             title="Drag to reorder"
                             onPointerDown={() => {
