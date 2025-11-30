@@ -4,9 +4,9 @@ import { SectionContent } from '@/components/sections/SectionContent';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
 
 const cards = [
-  { id: '1', content: 'Card 1', type: 'text' as 'text' },
-  { id: '2', content: 'Card 2', type: 'special' as 'special' }
-];
+  { id: '1', content: 'Card 1', type: 'text' },
+  { id: '2', content: 'Card 2', type: 'special' }
+] as const;
 
 const renderWithProvider = (ui: React.ReactElement) =>
   render(<ValBuilderProvider>{ui}</ValBuilderProvider>);
