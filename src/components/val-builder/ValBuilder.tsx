@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Header } from '@/components/header/Header';
 import { SectionNavigation } from '@/components/sections/SectionNavigation';
@@ -7,13 +7,32 @@ import { ValPreview } from './ValPreview';
 import { useValSections } from '@/hooks/api/useValSections';
 import { useValTemplateItemsByGroupId } from '@/hooks/api/useValTemplateItems';
 import { useAllValDetails, useSaveValChanges } from '@/hooks/api/useValDetails';
-import { useSectionChanges } from '@/hooks/useSectionChanges';
 import { valPdfService } from '@/services/api/valPdfService';
 import type { ValHeader, ValDetail } from '@/types/api';
+import { useValBuilder } from '@/contexts/ValBuilderContext';
+import { toast } from 'sonner';
 
 type ViewMode = 'edit' | 'preview-sections' | 'preview-final';
 
 export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: ValHeader, onCloseDrawer?: () => void }>) => {
+
+    const {
+        setValId,
+        currentGroupId,
+        setCurrentGroupId,
+        allValDetails,
+        setAllValDetails,
+        editorContent,
+        updateEditorContent,
+        getAllChanges,
+        hasChanges,
+        resetChanges,
+        updateSingleValDetail,
+        syncEditorToContext,
+        convertEditorContentToDetails,
+        updateSectionDetails
+    } = useValBuilder();
+
     const { data: valSections, isLoading: sectionsLoading, error: sectionsError } = useValSections();
     const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [mode, setMode] = useState<ViewMode>('edit');
@@ -29,35 +48,32 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
     const currentSection = sections[currentSectionIndex];
     const currentSectionObj = valSections ? valSections[currentSectionIndex] : undefined;
-    const currentGroupId = currentSectionObj?.groupId ?? null;
+
+    useEffect(() => {
+        if (currentSectionObj) {
+            console.log(currentSectionObj.groupId);
+            setCurrentGroupId(currentSectionObj.groupId);
+        }
+    }, [currentSectionObj, setCurrentGroupId]);
 
     // Fetch ALL ValDetails upfront (not per section) - cached for smooth transitions
-    const { data: allValDetails, isLoading: allDetailsLoading } = useAllValDetails(valHeader.valId ?? 0);
+    const { data: fetchedAllValDetails, isLoading: allDetailsLoading } = useAllValDetails(valHeader.valId ?? 0);
+
+    useEffect(() => {
+        if(valHeader) {
+            setValId(valHeader.valId);
+        }
+    }, [valHeader.valId, setValId]);
+
+    useEffect(() => {
+        if (!allDetailsLoading) {
+            console.log(fetchedAllValDetails);
+            setAllValDetails(fetchedAllValDetails || []);
+        }
+    }, [fetchedAllValDetails, setAllValDetails, allDetailsLoading]);
 
     // Fetch template items for current section (cached, won't refetch)
     const { data: templateItems } = useValTemplateItemsByGroupId(currentGroupId ?? 0);
-
-    // Get current section's ValDetails
-    const currentSectionDetails = useMemo(() => {
-        if (!currentGroupId || !allValDetails) return [];
-        return allValDetails
-            .filter(detail => detail.groupId === currentGroupId)
-            .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
-    }, [currentGroupId, allValDetails]);
-
-    // Track changes across all sections
-    const {
-        editorContent,
-        updateEditorContent,
-        getAllChanges,
-        hasChanges,
-        resetChanges,
-        updateSingleValDetail,
-    } = useSectionChanges({
-        valId: valHeader.valId ?? 0,
-        currentGroupId,
-        allValDetails,
-    });
 
     // Mutations
     const saveChanges = useSaveValChanges();
@@ -101,6 +117,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
     const handleSectionChange = (section: string) => {
         const index = sections.indexOf(section);
+        
         if (index === -1) {
             console.warn('Section not found in sections array:', section);
         } else {
@@ -126,6 +143,8 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
     };
 
     const handleCommentChange = (content: string) => {
+        const newDetails = convertEditorContentToDetails(content);
+        updateSectionDetails(newDetails);
         updateEditorContent(content);
     };
 
@@ -143,7 +162,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
             await valPdfService.openPdfInNewTab(valHeader.valId, includeHeaders);
         } catch (error) {
             console.error('Failed to generate PDF:', error);
-            // TODO: Show error notification/toast to user
+            toast.error('Failed to generate PDF');
         }
     };
 
@@ -158,6 +177,8 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
         }
 
         try {
+            // Sync latest editor state to context before change tracking
+            syncEditorToContext(editorContent);
             let changes = getAllChanges();
 
             if (changes.length === 0) {
@@ -167,10 +188,12 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
             changes.forEach(change => {
                 if (change.detail?.groupContent) {
                     change.detail.groupContent = stripValDetailsId(change.detail.groupContent);
+                    change.detail.valId = valHeader.valId;
                 }
             });
 
             await saveChanges.mutateAsync({ valId: valHeader.valId, changes });
+            toast.success('Changes saved successfully');
             resetChanges();
         } catch (err) {
             console.error('Failed to save changes:', err);
@@ -240,13 +263,10 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                         content: item.itemText ?? '',
                         type: 'text',
                     })) : []}
-                    editorContent={editorContent}
                     mode={mode}
                     onCardDragStart={handleCardDragStart}
                     onEditorContentChange={handleCommentChange}
-                    currentSectionDetails={currentSectionDetails}
                     onUpdateValDetail={handleUpdateValDetail}
-                    valId={valHeader.valId}
                 />
             )}
 

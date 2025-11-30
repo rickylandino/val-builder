@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { ValBuilderDrawer } from '@/components/val-builder/ValBuilderDrawer';
 
 const getStatusLabel = (statusId: number | null) => {
-    //TODO populate with database status'
+    //RLL populate with database status'
   switch (statusId) {
     case 1:
       return 'Draft';

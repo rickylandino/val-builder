@@ -1,10 +1,7 @@
-import { Node, mergeAttributes } from '@tiptap/core';
+import { mergeAttributes } from '@tiptap/core';
+import Paragraph from '@tiptap/extension-paragraph';
 
-export const EditorParagraph = Node.create({
-    name: 'paragraph',
-    group: 'block',
-    content: 'inline*',
-    defining: true,
+export const EditorParagraph = Paragraph.extend({
     addAttributes() {
         return {
             valDetailsId: {

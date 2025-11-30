@@ -188,36 +188,66 @@ span[data-chevron-placeholder] {
 }
 
 .indent-level-1 {
-  margin-left: 20px;
+  position: relative;
 }
-.indent-level-2 {
-  margin-left: 40px;
-}
-.indent-level-3 {
-  margin-left: 60px;
-}
-.indent-level-4 {
-  margin-left: 80px;
+.indent-level-1:not(.bullet)::before {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 100%;
+  vertical-align: top;
 }
 
-.indent-level-1.bullet {
-  margin-left: calc(2em + 20px);
+.indent-level-2 {
+  position: relative;
 }
-.indent-level-2.bullet {
-  margin-left: calc(2em + 40px);
+.indent-level-2:not(.bullet)::before {
+  content: '';
+  display: inline-block;
+  width: 40px;
+  height: 100%;
+  vertical-align: top;
 }
-.indent-level-3.bullet {
-  margin-left: calc(2em + 60px);
+
+.indent-level-3 {
+  position: relative;
+}
+.indent-level-3:not(.bullet)::before {
+  content: '';
+  display: inline-block;
+  width: 60px;
+  height: 100%;
+  vertical-align: top;
+}
+
+.indent-level-4 {
+  position: relative;
+}
+.indent-level-4:not(.bullet)::before {
+  content: '';
+  display: inline-block;
+  width: 80px;
+  height: 100%;
+  vertical-align: top;
+}
+
+.bullet.indent-level-1 {
+  border-left: 20px solid transparent;
+}
+.bullet.indent-level-2 {
+  border-left: 40px solid transparent;
+}
+.bullet.indent-level-3 {
+  border-left: 60px solid transparent;
 }
 .indent-level-4.bullet {
-  margin-left: calc(2em + 80px);
+  border-left: 80px solid transparent;
 }
 
-.bullet {
-    display: list-item;
-    list-style-type: disc;
-    list-style-position: outside;
-    margin-left: 2em;
+p.bullet::before {
+  content: '•';
+  margin-right: 0.5em;
+  color: #000;
 }
 
 /* Override ProseMirror drop cursor styles for custom drag-and-drop indicator */
@@ -246,7 +276,7 @@ span[data-chevron-placeholder] {
   z-index: 1001;
 }
 
-/* Move handle styles */
+/* Custom Handle styles */
 .move-handle-container {
   display: inline-flex;
   gap: 2px;

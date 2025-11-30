@@ -2,7 +2,7 @@ import { Node } from '@tiptap/core';
 import { Plugin, PluginKey } from '@tiptap/pm/state';
 import { Decoration, DecorationSet } from '@tiptap/pm/view';
 
-function createMoveHandleWidget(node: any, endPos: number, state: any, options: any) {
+function createCustomHandleWidget(node: any, endPos: number, state: any, options: any) {
     const container = document.createElement('span');
     container.className = 'move-handle-container';
 
@@ -50,8 +50,8 @@ function createMoveHandleWidget(node: any, endPos: number, state: any, options: 
     return container;
 }
 
-export const MoveHandle = Node.create({
-    name: 'moveHandle',
+export const CustomHandle = Node.create({
+    name: 'customHandle',
 
     addOptions() {
         return {
@@ -63,7 +63,7 @@ export const MoveHandle = Node.create({
     addProseMirrorPlugins() {
         return [
             new Plugin({
-                key: new PluginKey('moveHandle'),
+                key: new PluginKey('customHandle'),
                 props: {
                     decorations: (state: any) => {
                         const decorations: Decoration[] = [];
@@ -74,7 +74,7 @@ export const MoveHandle = Node.create({
                                 const endPos = pos + node.nodeSize - 1;
                                 const handleWidget = Decoration.widget(
                                     endPos,
-                                    () => createMoveHandleWidget(node, endPos, state, options),
+                                    () => createCustomHandleWidget(node, endPos, state, options),
                                     { side: 1 }
                                 );
                                 decorations.push(handleWidget);

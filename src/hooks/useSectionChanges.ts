@@ -1,3 +1,4 @@
+//RLL: NOT IN USE ANYMORE - moved logic into ValBuilderContext.tsx
 import { useState, useCallback, useEffect } from 'react';
 import type { ValDetail } from '@/types/api/ValDetail';
 import type { ValChangesState, SectionChanges } from '@/lib/valChangesTracker';
@@ -326,5 +327,6 @@ export function useSectionChanges({ valId, currentGroupId, allValDetails }: UseS
         getAllChanges,
         hasChanges,
         resetChanges,
+        parseEditorContentToDetails
     };
 }

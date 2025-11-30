@@ -3,8 +3,7 @@ import { CardLibrary } from '../cards/CardLibrary';
 import { useState, useEffect } from 'react';
 import type { ValDetail } from '@/types/api';
 import { FormatOptionsDialog } from '../val-builder/FormatOptionsDialog';
-import { generateHtmlContent, useSectionChanges } from '@/hooks/useSectionChanges';
-
+import { useValBuilder } from '@/contexts/ValBuilderContext';
 
 interface CardData {
     id: string;
@@ -17,11 +16,9 @@ type ViewMode = 'edit' | 'preview-sections' | 'preview-final';
 // Change prop name for clarity
 interface SectionContentProps {
     cards: CardData[];
-    editorContent: string;
     mode: ViewMode;
     onCardDragStart: (id: string, content: string) => void;
     onEditorContentChange: (content: string) => void;
-    currentSectionDetails?: ValDetail[];
     onUpdateValDetail?: (updatedDetail: ValDetail) => void;
     readOnly?: boolean;
     valId?: number;
@@ -29,29 +26,31 @@ interface SectionContentProps {
 
 export const SectionContent: React.FC<SectionContentProps> = ({
     cards,
-    editorContent,
     mode,
     onCardDragStart,
     onEditorContentChange,
-    currentSectionDetails = [],
     onUpdateValDetail,
-    readOnly = false,
-    valId
+    readOnly = false
 }) => {
+    const {
+        currentDetails,
+        updateSingleValDetail,
+        updateSectionDetails
+    } = useValBuilder();
+
     const [selectedDetailId, setSelectedDetailId] = useState<string | null>(null);
     const [formatDialogOpen, setFormatDialogOpen] = useState(false);
 
     // Track details in local state for full control
-    const [localSectionDetails, setLocalSectionDetails] = useState<ValDetail[]>(currentSectionDetails);
+    //@ts-ignore - Don't care about the fact that localSectionDetails value isn't used. It's needed for the delete to work properly.
+    const [localSectionDetails, setLocalSectionDetails] = useState<ValDetail[]>([]); //NOSONAR - ignoring this because we need the local state in order for delete to work properly
 
-    const { updateSingleValDetail } = useSectionChanges({ valId: valId || 0, currentGroupId: null, allValDetails: undefined });
-
-    // Sync prop changes to local state
+    // Sync context changes to local state
     useEffect(() => {
-        setLocalSectionDetails(currentSectionDetails);
-    }, [currentSectionDetails]);
+        setLocalSectionDetails(currentDetails);
+    }, [currentDetails]);
 
-    const selectedDetail = localSectionDetails.find(d => d.valDetailsId === selectedDetailId) || null;
+    const selectedDetail = currentDetails.find(d => d.valDetailsId === selectedDetailId) || null;
 
     const handleSaveFormat = (updates: Partial<ValDetail>) => {
         if (selectedDetail && onUpdateValDetail) {
@@ -60,7 +59,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                 ...updates,
             };
 
-            // Use canonical update from useSectionChanges for state parity
             if (typeof updateSingleValDetail === 'function') {
                 updateSingleValDetail(updatedDetail);
             }
@@ -69,32 +67,21 @@ export const SectionContent: React.FC<SectionContentProps> = ({
         }
     };
 
-    // Remove a detail from localSectionDetails and mark for deletion
-    const removeDetail = (valDetailsId: string) => {
-        setLocalSectionDetails(prev => {
-            const updated = prev.filter(detail => detail.valDetailsId !== valDetailsId);
-            // Regenerate HTML and update editor
-            const htmlContent = generateHtmlContent(updated);
-            onEditorContentChange(htmlContent);
-            return updated;
-        });
-        setSelectedDetailId(null);
-        setFormatDialogOpen(false);
-    };
-
-    const handleDeleteIconClick = (
-        node: FormatIconClickNode
-    ) => {
+    function handleDeleteIconClick(node: FormatIconClickNode) {
         const valDetailsId = node.attrs?.valDetailsId;
         if (valDetailsId) {
-            // Just remove from editor and store change, don't call API
-            if (typeof removeDetail === 'function') {
-                removeDetail(valDetailsId);
-            }
+
+            setLocalSectionDetails(prev => {
+                const updated = prev.filter(detail => detail.valDetailsId !== valDetailsId);
+                // Regenerate HTML and update editor
+                updateSectionDetails(updated);
+                return updated;
+            });
+
             setSelectedDetailId(null);
             setFormatDialogOpen(false);
         }
-    };
+    }
 
     interface FormatIconClickNode {
         type: { name: string };
@@ -129,7 +116,6 @@ export const SectionContent: React.FC<SectionContentProps> = ({
 
                     <div className="flex-1 overflow-auto">
                         <RichTextEditor
-                            content={editorContent}
                             onChange={onEditorContentChange}
                             placeholder="Drag cards here or start typing..."
                             readOnly={mode === 'preview-sections' || mode === 'preview-final' || readOnly}
