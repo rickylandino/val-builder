@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { CommentSidebar } from '@/components/comments/CommentSidebar';
+import { CommentSidebar, formatDate } from '@/components/comments/CommentSidebar';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
 import * as hooks from '@/hooks/api/useValAnnotations';
 
@@ -27,10 +27,10 @@ const mockAnnotations = [
   },
 ];
 
-function renderSidebar({ valId = 101, groupId = 5, annotations = mockAnnotations, isLoading = false } = {}) {
+function renderSidebar({ valId = 101, groupId = 5, annotations = mockAnnotations, isLoading = false, createMutation, deleteMutation } = {}) {
   (vi.spyOn(hooks, 'useValAnnotations') as any).mockReturnValue({ data: annotations, isLoading });
-  (vi.spyOn(hooks, 'useCreateValAnnotation') as any).mockReturnValue({ mutateAsync: vi.fn(), isPending: false });
-  (vi.spyOn(hooks, 'useDeleteValAnnotation') as any).mockReturnValue({ mutateAsync: vi.fn(), isPending: false });
+  (vi.spyOn(hooks, 'useCreateValAnnotation') as any).mockReturnValue(createMutation || { mutateAsync: vi.fn(), isPending: false });
+  (vi.spyOn(hooks, 'useDeleteValAnnotation') as any).mockReturnValue(deleteMutation || { mutateAsync: vi.fn(), isPending: false });
   return render(
     <ValBuilderProvider initialValId={valId} initialCurrentGroupId={groupId} initialAllValDetails={[]}> 
       <CommentSidebar />
@@ -82,5 +82,55 @@ describe('CommentSidebar', () => {
   it('shows correct comment count', () => {
     renderSidebar();
     expect(screen.getByText('2')).toBeInTheDocument();
+  });
+
+  it('adds a comment when pressing Enter in textarea', async () => {
+    const mutateAsync = vi.fn().mockResolvedValue({});
+    renderSidebar({ createMutation: { mutateAsync, isPending: false } });
+    const textarea = screen.getByPlaceholderText(/add a comment/i);
+    fireEvent.change(textarea, { target: { value: 'Keyboard comment' } });
+    fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: false });
+    await waitFor(() => {
+      expect(mutateAsync).toHaveBeenCalledWith({
+        author: 'Ricky Landino',
+        authorId: 'rlandino',
+        annotationContent: 'Keyboard comment',
+        valId: 101,
+        groupId: 5,
+      });
+    });
+  });
+
+  it('does not add comment when pressing Shift+Enter in textarea', async () => {
+    const mutateAsync = vi.fn();
+    (vi.spyOn(hooks, 'useCreateValAnnotation') as any).mockReturnValue({ mutateAsync, isPending: false });
+    renderSidebar();
+    const textarea = screen.getByPlaceholderText(/add a comment/i);
+    fireEvent.change(textarea, { target: { value: 'Should not submit' } });
+    fireEvent.keyDown(textarea, { key: 'Enter', shiftKey: true });
+    expect(mutateAsync).not.toHaveBeenCalled();
+  });
+
+  it('disables delete button while deleting', () => {
+    vi.clearAllMocks();
+    renderSidebar({ deleteMutation: { mutateAsync: vi.fn(), isPending: true } });
+    const deleteBtns = screen.getAllByRole('button', { name: /delete comment/i });
+    expect(deleteBtns[0]).toBeDisabled();
+    expect(deleteBtns[1]).toBeDisabled();
+  });
+
+  it('renders comment content correctly', () => {
+    renderSidebar();
+    expect(screen.getByText('First comment')).toBeInTheDocument();
+    expect(screen.getByText('Second comment')).toBeInTheDocument();
+  });
+
+  it('formats date correctly for recent and old comments', () => {
+    // Use the formatDate utility directly
+    const now = new Date();
+    expect(formatDate(now.toISOString())).toBe('Just now');
+    expect(formatDate(new Date(now.getTime() - 5 * 60000).toISOString())).toBe('5m ago');
+    expect(formatDate(new Date(now.getTime() - 2 * 3600000).toISOString())).toBe('2h ago');
+    expect(formatDate(new Date(now.getTime() - 3 * 86400000).toISOString())).toBe('3d ago');
   });
 });
