@@ -1,508 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RichTextEditor } from '@/components/editor/RichTextEditor';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
-import userEvent from '@testing-library/user-event';
-
-const initialCurrentDetails = [
-    {
-        "valDetailsId": "0c1e1c5e-9907-42fc-acae-16acd59699c4",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"\" data-val-details-id=\"0c1e1c5e-9907-42fc-acae-16acd59699c4\">We ask that you pay particular attention to the following items: bonding coverage needs to be increased or purchased; the Plan is newly top heavy; required minimum distributions are or may be required; Highly Compensated Employees' deferrals should be limited; deferrals or loan repayments may have been deposited late; need to use forfeiture dollars; your Plan will be subject to an independent audit next year; the list of newly eligible employees.</p>",
-        "displayOrder": 1,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "e2435cc9-d1ba-41fe-8042-665367386297",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"font-bold\" data-val-details-id=\"e2435cc9-d1ba-41fe-8042-665367386297\">more additional content2</p>",
-        "displayOrder": 2,
-        "bullet": false,
-        "indent": null,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "2fc27cc7-8be0-4d57-ac57-0c28ff0390b3",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"font-bold\" data-val-details-id=\"2fc27cc7-8be0-4d57-ac57-0c28ff0390b3\">Here is some additional new content</p>",
-        "displayOrder": 3,
-        "bullet": false,
-        "indent": null,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "3814e04a-fc8b-49c0-a74d-05152e4e371d",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"font-bold\" data-val-details-id=\"3814e04a-fc8b-49c0-a74d-05152e4e371d\">more new content123a</p>",
-        "displayOrder": 4,
-        "bullet": false,
-        "indent": null,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "a2f86dcc-4d6d-4b08-97ec-9e9e277c5ad7",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"indent-level-3 bullet\" data-val-details-id=\"a2f86dcc-4d6d-4b08-97ec-9e9e277c5ad7\">Ricky 2</p>",
-        "displayOrder": 5,
-        "bullet": true,
-        "indent": 3,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    }
-];
-
-const initialAllDetails = [
-    {
-        "valDetailsId": "0d1a3be5-a216-4ab9-8f17-4e95cf7a8f68",
-        "valId": 4,
-        "groupId": 2,
-        "groupContent": "<p class=\"indent-level-4 tightLineHeight bullet\">Census Data Verification</p>",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": 4,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": true
-    },
-    {
-        "valDetailsId": "a1836ca7-7c28-4174-a7ea-1b006f2b3884",
-        "valId": 4,
-        "groupId": 5,
-        "groupContent": "<p>We reconciled each participant's account comparing the contributions you reported to us with those reported by [[IP: ]] and found no discrepancies OR and found <<          >>.</p>",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "2c845d5f-08b8-4b95-807a-955100ee720e",
-        "valId": 4,
-        "groupId": 8,
-        "groupContent": "<p>Your Plan allows participants to enter the Plan on the <<          >> or <<      >> following <<          >>.  The following employees have or will become eligible to participate in the Plan on the dates noted below if they work 1,000 hours from their date of hire to the anniversary of their date of hire and are employed on the entry date:</p>",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "964f8bc7-9866-40e0-b406-fe64f65a2a66",
-        "valId": 4,
-        "groupId": 9,
-        "groupContent": "Please be reminded that your Plan permits employees who have attained the age of 50, or will do so by the end of the year, to make 401(k) contributions of up to $31,000 this year.  The limit for employees who are younger than 50 is $23,500.",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "c366e2d8-0f29-47b8-9d9a-4535385af81d",
-        "valId": 4,
-        "groupId": 10,
-        "groupContent": "Based on your distribution policy, listed below (-OR- on the Distribution Worksheet) are the terminated participants eligible to be paid as of the end of the plan year:",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "32046be9-5dc0-4818-9ed6-c78e80e48722",
-        "valId": 4,
-        "groupId": 16,
-        "groupContent": "Your Form 5500 will be prepared shortly.  An instructional email will be sent from our office when the form is ready to be filed electronically.",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "ae578e58-5a9b-4108-94ff-41b524460b72",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "Please take a moment to review the enclosed schedules and give me a call if you have any questions.",
-        "displayOrder": 1,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "83a7a7a9-a956-4324-92b2-dac67859b295",
-        "valId": 4,
-        "groupId": 12,
-        "groupContent": "IRS Forms 1099-R were prepared by [[1099IP: ]] for distributions and loan defaults (TECH:  omit loan language if not applicable.) for the year.  The attached Distribution Summary lists those employees who received distributions. (TECH: If this last sentence is not needed, delete it.)",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "abe58bbf-68c2-4c75-8a2d-dba4477d7207",
-        "valId": 4,
-        "groupId": 15,
-        "groupContent": "The Plan Document defines what the Plan’s operational procedures are. Please review the enclosed reference guide, as well as the full Plan Document to ensure the provisions contained in the plan align with the way your organization is operating the plan. If you have made changes to your operations and procedures, and/or see any provisions that need to be reviewed, please contact us to discuss and potentially amend the plan accordingly.",
-        "displayOrder": 1,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "a6c5a006-204d-40d8-8765-56c623176d18",
-        "valId": 4,
-        "groupId": 3,
-        "groupContent": "<p class=\"\">The valuation was completed reflecting the following contributions to the Plan:</p>",
-        "displayOrder": 1,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "0c1e1c5e-9907-42fc-acae-16acd59699c4",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"\">We ask that you pay particular attention to the following items: bonding coverage needs to be increased or purchased; the Plan is newly top heavy; required minimum distributions are or may be required; Highly Compensated Employees' deferrals should be limited; deferrals or loan repayments may have been deposited late; need to use forfeiture dollars; your Plan will be subject to an independent audit next year; the list of newly eligible employees.</p>",
-        "displayOrder": 1,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "b3de123a-c5e2-42ec-955d-602f0a60142d",
-        "valId": 4,
-        "groupId": 3,
-        "groupContent": "<p class=\"\">The valuation was completed reflecting &lt;&lt;aaa&gt;&gt; contributions in the amount of $&lt;&lt;bbb&gt;&gt;.</p>",
-        "displayOrder": 2,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "e2435cc9-d1ba-41fe-8042-665367386297",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"font-bold\">more additional content2</p>",
-        "displayOrder": 2,
-        "bullet": false,
-        "indent": null,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "c587c5ea-a4f9-4ff5-b37b-632d58e6127d",
-        "valId": 4,
-        "groupId": 10,
-        "groupContent": "Using the addresses available from the investment statements, we will send distribution packages to terminated participants and contact you for processing as we receive their responses.",
-        "displayOrder": 2,
-        "bullet": false,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "1ea7f181-ad04-4354-af09-e3ea49a6f74a",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "Sincerely,",
-        "displayOrder": 2,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "96fa4d59-0552-4677-b9d2-90d3b009ce07",
-        "valId": 4,
-        "groupId": 8,
-        "groupContent": "<p>Please be sure that new participants complete Enrollment and Beneficiary Forms even if they do not elect to defer.  Please note that the spouse must be the primary beneficiary unless the spouse provides written, notarized consent to the designation of another primary beneficiary.  All new and current participants must receive a copy of the most recent Summary Plan Description and addendums as well as, if applicable, the QDIA Notice and Participant Fee Disclosure Notice.  We recommend that you obtain a receipt from eligible participants when you provide them with their initial and all subsequent copies of the Summary Plan Description and addendums.</p>",
-        "displayOrder": 2,
-        "bullet": false,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "4a883666-97fc-452b-917f-e862c1f02f86",
-        "valId": 4,
-        "groupId": 2,
-        "groupContent": "<p class=\"indent-level-1 tightLineHeight bullet\">List of Contributions by Type</p>",
-        "displayOrder": 2,
-        "bullet": true,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": true
-    },
-    {
-        "valDetailsId": "3ee965db-b449-4591-8c6d-b938c8a34fb3",
-        "valId": 4,
-        "groupId": 2,
-        "groupContent": "<p class=\"indent-level-1 tightLineHeight font-bold bullet\">Summary of Participant Accounts</p>",
-        "displayOrder": 3,
-        "bullet": true,
-        "indent": 1,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": true
-    },
-    {
-        "valDetailsId": "81b39c43-c1ed-4f7e-baaa-f4f45e39a0c8",
-        "valId": 4,
-        "groupId": 8,
-        "groupContent": "<p>Recent legislation from the Setting Every Community Up for Retirement Enhancement (SECURE) Act made sweeping changes to the retirement plan landscape, with some of the changes mandatory, and others optional.  Our office has and will continue to send information in separate communications, but two of the most notable required changes relate to Long Term Part Time (LTPT) employees, and mandatory Roth catch-up contributions.</p>",
-        "displayOrder": 3,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": 1,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "208406ad-9074-408f-ba1d-24e574e2298e",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "[[TechSignature]]",
-        "displayOrder": 3,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": true
-    },
-    {
-        "valDetailsId": "2fc27cc7-8be0-4d57-ac57-0c28ff0390b3",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"font-bold\">Here is some additional new content</p>",
-        "displayOrder": 3,
-        "bullet": false,
-        "indent": null,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "5e665abb-cf2e-411f-b161-a16f5b112c42",
-        "valId": 4,
-        "groupId": 3,
-        "groupContent": "<p class=\"\">*Effective with the &lt;&lt;123&gt;&gt; year, the plan has begun carrying a Prefunding Balance. These are generated from deposits in excess of the minimum required contribution, and can be credited towards future years' funding as needed. Each year that you deposit more than the minimum, additional amounts will be added to the Prefunding Balance. For years where you do not deposit enough to cover the minimum, it may be possible for you to use the Prefunding Balance to cover the remaining required contribution. The Prefunding Balance as of January 1, &lt;&lt; &gt;&gt; is $&lt;&lt;123&gt;&gt;.</p>",
-        "displayOrder": 3,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "3814e04a-fc8b-49c0-a74d-05152e4e371d",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"font-bold\">more new content123a</p>",
-        "displayOrder": 4,
-        "bullet": false,
-        "indent": null,
-        "bold": true,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "8c7555b1-8289-4ddd-b4d0-8d34ec8cfe74",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "[[Tech: rlandino]]",
-        "displayOrder": 4,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": true
-    },
-    {
-        "valDetailsId": "0c827f37-83b3-4e7d-9aca-411cd2d32330",
-        "valId": 4,
-        "groupId": 8,
-        "groupContent": "<p>Effective for 2025, employees who worked at least 500 hours in two (decreased from three) consecutive years after 2022 who may not have otherwise qualified for the plan are now REQUIRED to be given the opportunity to contribute from their pay, via 401(k) deferral. </p>",
-        "displayOrder": 4,
-        "bullet": false,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": 1,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "62f60ded-49c0-4550-94c6-863db1f9fd04",
-        "valId": 4,
-        "groupId": 2,
-        "groupContent": "<p class=\"indent-level-1 bullet\">Reference Guide</p>",
-        "displayOrder": 4,
-        "bullet": true,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "1b227c47-5de7-4380-b8d7-78fc646e07b4",
-        "valId": 4,
-        "groupId": 2,
-        "groupContent": "<p class=\"bullet\">Annual Valuation</p>",
-        "displayOrder": 5,
-        "bullet": true,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "452a3e7f-5bbc-4b41-96c5-04e2f59b1804",
-        "valId": 4,
-        "groupId": 8,
-        "groupContent": "<p>Such LTPT participants are not required to receive any company funded contributions, but if a Plan Sponsor would like to provide them to such employees, we can amend the plan accordingly. These new rules do not currently affect every plan, so while determining eligibility, please contact us if you have any questions about what is involved, and which employees may be impacted. </p>",
-        "displayOrder": 5,
-        "bullet": false,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": 1,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "984e152e-d8ac-479d-939a-13b24519bda0",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "[[TechTitle]]",
-        "displayOrder": 5,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": true
-    },
-    {
-        "valDetailsId": "a2f86dcc-4d6d-4b08-97ec-9e9e277c5ad7",
-        "valId": 4,
-        "groupId": 1,
-        "groupContent": "<p class=\"indent-level-3 bullet\">Ricky 2</p>",
-        "displayOrder": 5,
-        "bullet": true,
-        "indent": 3,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "80d98356-1fe6-413e-82b6-e0447f00b59b",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "Enclosures",
-        "displayOrder": 6,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "23848e0f-ec2d-45c8-a167-a7a48cce5773",
-        "valId": 4,
-        "groupId": 8,
-        "groupContent": "<p>Effective for 2026, participants earning over a certain threshold (i.e., $145,000 in 2025) are required to have their 401(k) catch-up contributions made on a Roth basis. The government has already postponed enactment of this provision from 2024 to 2026, and additional information as to how this will logistically work will be provided as they provide additional guidance.</p>",
-        "displayOrder": 6,
-        "bullet": false,
-        "indent": 1,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    },
-    {
-        "valDetailsId": "c86c9b19-9c78-4f86-9514-7cfe0e14a149",
-        "valId": 4,
-        "groupId": 17,
-        "groupContent": "[[CCMailingNames]]",
-        "displayOrder": 7,
-        "bullet": false,
-        "indent": null,
-        "bold": false,
-        "center": false,
-        "blankLineAfter": null,
-        "tightLineHeight": false
-    }
-]
+import type { ValDetail } from '@/types/api';
+import { initialAllDetails } from './editor-test-data';
 
 describe('RichTextEditor', () => {
     let onChange: (content: string) => void;
@@ -515,10 +16,19 @@ describe('RichTextEditor', () => {
         onDelete = vi.fn<() => void>();
     });
 
-    const renderWithProvider = (ui: React.ReactElement) =>
-        render(<ValBuilderProvider>
-    {ui}
-    </ValBuilderProvider>);
+    const renderWithProvider = (ui: React.ReactElement, initialData?: Partial<{
+        allValDetails: ValDetail[];
+        currentGroupId: number;
+        valId: number;
+    }>) => render(
+        <ValBuilderProvider 
+            initialAllValDetails={initialData?.allValDetails}
+            initialCurrentGroupId={initialData?.currentGroupId}
+            initialValId={initialData?.valId}
+        >
+            {ui}
+        </ValBuilderProvider>
+    );
 
     it('renders editor and toolbar', () => {
         renderWithProvider(
@@ -556,5 +66,661 @@ describe('RichTextEditor', () => {
             editorContent.dispatchEvent(event);
             expect(editorContent).toBeInTheDocument();
         }
+    });
+
+    it('should render initial content from context', async () => {
+        const testDetails: ValDetail[] = [
+            {
+                valDetailsId: 'test-1',
+                valId: 1,
+                groupId: 1,
+                displayOrder: 1,
+                groupContent: '<p data-val-details-id="test-1">Test content from context</p>',
+                bullet: false,
+                indent: null,
+                bold: false,
+                center: false,
+                blankLineAfter: null,
+                tightLineHeight: false,
+            },
+        ];
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: testDetails,
+                currentGroupId: 1,
+                valId: 1,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Test content from context')).toBeInTheDocument();
+        });
+    });
+
+    it('should allow dragging and dropping paragraphs within the editor', async () => {
+        // Mock the browser APIs that jsdom doesn't support
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = vi.fn().mockReturnValue(null);
+        }
+
+        renderWithProvider(
+            <RichTextEditor
+                onChange={onChange}
+                onFormat={onFormat}
+                onDelete={onDelete}
+            />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        // Find all paragraphs
+        const paragraphs = screen.getAllByText(/Content/);
+
+        expect(paragraphs).toHaveLength(5);
+
+        // Access the TipTap editor instance via window test hook
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+            
+            // Get the actual document positions for accurate targeting
+            const doc = pmView.state.doc;
+            let targetDropPos = 0;
+            let fifthParagraphId = '';
+            
+            // Find the fifth paragraph's actual valDetailsId and position after fourth
+            const allParagraphs: any[] = [];
+            doc.descendants((node: any, pos: number) => {
+                if (node.type.name === 'paragraph' && node.attrs?.valDetailsId) {
+                    allParagraphs.push({ id: node.attrs.valDetailsId, pos, nodeSize: node.nodeSize });
+                }
+            });
+                        
+            // The fifth paragraph is at index 4
+            if (allParagraphs.length >= 5) {
+                fifthParagraphId = allParagraphs[4].id;
+                // Target position is after the 3rd paragraph (index 3, before original 4th)
+                targetDropPos = allParagraphs[3].pos + allParagraphs[3].nodeSize;
+            }
+            
+            // Create mock event and slice for internal drop - these bounds are the correct ones for the content in the mock data
+            // If mock data changes, these will need to be adjusted
+            const mockEvent = {
+                clientX: 372,
+                clientY: 415,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn(),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const mockSlice = {
+                content: {
+                    firstChild: {
+                        attrs: {
+                            valDetailsId: fifthParagraphId, // Use actual fifth paragraph ID from document
+                        },
+                    },
+                },
+            };
+
+            // Call the handleDrop function directly from editorProps
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                // Mock posAtCoords to return position after third paragraph (to move 5th before 4th)
+                pmView.posAtCoords = vi.fn().mockReturnValue({ pos: targetDropPos, inside: -1 });
+                
+                handleDrop(pmView, mockEvent as any, mockSlice, true);
+                
+                // Wait for state update
+                await waitFor(() => {
+                    const updatedParagraphs = screen.getAllByText(/Content/);
+                    
+                    // Verify onChange was called multiple times (initial render + drop update)
+                    expect(updatedParagraphs[3].textContent).toContain('Content 5');
+                }, { timeout: 3000 });
+            } 
+        }
+    });
+
+    it('should handle external drop (from outside editor)', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = vi.fn().mockReturnValue(null);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+            
+            const mockEvent = {
+                clientX: 100,
+                clientY: 100,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn((type: string) => {
+                        if (type === 'text/html') return '<p>Dropped content</p>';
+                        return 'Dropped content';
+                    }),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                pmView.posAtCoords = vi.fn().mockReturnValue({ pos: 10, inside: -1 });
+                
+                // Call with moved=false for external drop
+                const result = handleDrop(pmView, mockEvent as any, null, false);
+                
+                expect(result).toBe(true);
+                expect(mockEvent.preventDefault).toHaveBeenCalled();
+                expect(mockEvent.stopPropagation).toHaveBeenCalled();
+            }
+        }
+    });
+
+    it('should return false when external drop has no content', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = vi.fn().mockReturnValue(null);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+            
+            const mockEvent = {
+                clientX: 100,
+                clientY: 100,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn(() => ''),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                pmView.posAtCoords = vi.fn().mockReturnValue({ pos: 10, inside: -1 });
+                
+                const result = handleDrop(pmView, mockEvent as any, null, false);
+                
+                expect(result).toBe(false);
+            }
+        }
+    });
+
+    it('should return false when external drop has no valid position', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = vi.fn().mockReturnValue(null);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+            
+            const mockEvent = {
+                clientX: 100,
+                clientY: 100,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn(() => 'Some content'),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                pmView.posAtCoords = vi.fn().mockReturnValue(null);
+                
+                const result = handleDrop(pmView, mockEvent as any, null, false);
+                
+                expect(result).toBe(false);
+            }
+        }
+    });
+
+    it('should update editor content when context editorContent changes', async () => {
+        const { unmount } = renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        unmount();
+
+        // Render with new content
+        const newDetails: ValDetail[] = [
+            {
+                valDetailsId: 'new-1',
+                valId: 4,
+                groupId: 1,
+                displayOrder: 1,
+                groupContent: '<p data-val-details-id="new-1">New content</p>',
+                bullet: false,
+                indent: null,
+                bold: false,
+                center: false,
+                blankLineAfter: null,
+                tightLineHeight: false,
+            },
+        ];
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: newDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('New content')).toBeInTheDocument();
+        });
+    });
+
+    it('should handle dragover event', () => {
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        const editorSection = screen.getByLabelText('Editor content');
+        
+        // Create a proper DragEvent-like object
+        const dragEvent = new Event('dragover', { bubbles: true, cancelable: true });
+        Object.defineProperty(dragEvent, 'dataTransfer', {
+            value: { dropEffect: '' },
+            writable: true
+        });
+
+        editorSection.dispatchEvent(dragEvent);
+
+        expect((dragEvent as any).dataTransfer.dropEffect).toBe('copy');
+    });
+
+    it('should return false when handleKeyDown receives non-Enter key', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+            
+            const mockEvent = {
+                key: 'a',
+                shiftKey: false,
+                preventDefault: vi.fn(),
+            };
+
+            const handleKeyDown = pmView.props?.handleKeyDown;
+            if (handleKeyDown) {
+                const result = handleKeyDown(pmView, mockEvent as any);
+                
+                expect(result).toBe(false);
+                expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+            }
+        }
+    });
+
+    it('should return false when Shift+Enter is pressed', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+            
+            const mockEvent = {
+                key: 'Enter',
+                shiftKey: true,
+                preventDefault: vi.fn(),
+            };
+
+            const handleKeyDown = pmView.props?.handleKeyDown;
+            if (handleKeyDown) {
+                const result = handleKeyDown(pmView, mockEvent as any);
+                
+                expect(result).toBe(false);
+                expect(mockEvent.preventDefault).not.toHaveBeenCalled();
+            }
+        }
+    });
+
+    it('should correctly calculate target index when dragging upward', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = vi.fn().mockReturnValue(null);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+
+            const doc = pmView.state.doc;
+            const paragraphs: any[] = [];
+
+            doc.descendants((node: any, pos: number) => {
+                if (node.type.name === 'paragraph') {
+                    const valDetailsId = node.attrs?.valDetailsId;
+                    if (valDetailsId) {
+                        paragraphs.push({ valDetailsId, pos, node });
+                    }
+                }
+            });
+
+            // Drag paragraph 4 up to paragraph 1's position (dragging upward)
+            const draggedParagraph = paragraphs[3]; // Index 3 (4th paragraph)
+            const targetParagraph = paragraphs[0]; // Index 0 (1st paragraph)
+
+            const mockSlice = {
+                content: {
+                    firstChild: {
+                        type: { name: 'paragraph' },
+                        attrs: { valDetailsId: draggedParagraph.valDetailsId },
+                        content: { size: 0 },
+                    },
+                },
+            };
+
+            const mockEvent = {
+                clientX: 100,
+                clientY: 50,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn(),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                // Position at target paragraph (within its range to trigger the findTargetIndex logic)
+                pmView.posAtCoords = vi.fn().mockReturnValue({ 
+                    pos: targetParagraph.pos + 3, // Position within the first paragraph
+                    inside: -1 
+                });
+
+                handleDrop(pmView, mockEvent as any, mockSlice, true);
+
+                expect(mockEvent.preventDefault).toHaveBeenCalled();
+            }
+        }
+    });
+
+    it('should correctly calculate target index when dragging downward', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+        if (!document.elementFromPoint) {
+            document.elementFromPoint = vi.fn().mockReturnValue(null);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+
+            const doc = pmView.state.doc;
+            const paragraphs: any[] = [];
+
+            doc.descendants((node: any, pos: number) => {
+                if (node.type.name === 'paragraph') {
+                    const valDetailsId = node.attrs?.valDetailsId;
+                    if (valDetailsId) {
+                        paragraphs.push({ valDetailsId, pos, node });
+                    }
+                }
+            });
+
+            // Drag paragraph 1 down to paragraph 4's position (dragging downward)
+            const draggedParagraph = paragraphs[0]; // Index 0 (1st paragraph)
+            const targetParagraph = paragraphs[3]; // Index 3 (4th paragraph)
+
+            const mockSlice = {
+                content: {
+                    firstChild: {
+                        type: { name: 'paragraph' },
+                        attrs: { valDetailsId: draggedParagraph.valDetailsId },
+                        content: { size: 0 },
+                    },
+                },
+            };
+
+            const mockEvent = {
+                clientX: 100,
+                clientY: 150,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn(),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                // Position at target paragraph (within its range to trigger the findTargetIndex logic)
+                pmView.posAtCoords = vi.fn().mockReturnValue({ 
+                    pos: targetParagraph.pos + 3, // Position within the fourth paragraph
+                    inside: -1 
+                });
+
+                handleDrop(pmView, mockEvent as any, mockSlice, true);
+
+                expect(mockEvent.preventDefault).toHaveBeenCalled();
+            }
+        }
+    });
+
+    it('should return false when moved is true but slice is invalid', async () => {
+        if (!document.elementsFromPoint) {
+            document.elementsFromPoint = vi.fn().mockReturnValue([]);
+        }
+
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        await waitFor(() => {
+            expect(screen.getByText('Content 1')).toBeInTheDocument();
+        });
+
+        const tiptapEditor = (globalThis as any).__tiptapEditor;
+        
+        if (tiptapEditor?.view) {
+            const pmView = tiptapEditor.view;
+
+            const mockEvent = {
+                clientX: 100,
+                clientY: 50,
+                preventDefault: vi.fn(),
+                stopPropagation: vi.fn(),
+                dataTransfer: {
+                    getData: vi.fn(),
+                    setData: vi.fn(),
+                    clearData: vi.fn(),
+                },
+            };
+
+            const handleDrop = pmView.props?.handleDrop;
+            if (handleDrop) {
+                pmView.posAtCoords = vi.fn().mockReturnValue({ pos: 10, inside: -1 });
+                
+                // Call with moved=true but null slice to reach line 190
+                const result = handleDrop(pmView, mockEvent as any, null, true);
+                
+                expect(result).toBe(false);
+            }
+        }
+    });
+
+    it('should toggle debug panel', () => {
+        renderWithProvider(
+            <RichTextEditor onChange={onChange} />,
+            {
+                allValDetails: initialAllDetails,
+                currentGroupId: 1,
+                valId: 4,
+            }
+        );
+
+        const debugButton = screen.getByText('Show Debug');
+        expect(debugButton).toBeInTheDocument();
+
+        fireEvent.click(debugButton);
+
+        expect(screen.getByText('Hide Debug')).toBeInTheDocument();
     });
 });

@@ -66,6 +66,10 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         },
         onCreate: ({ editor }) => {
             editorInstanceRef.current = editor;
+            // Expose editor for testing
+            if (typeof window !== 'undefined' && import.meta.env.MODE === 'test') {
+                (window as any).__tiptapEditor = editor;
+            }
         },
         editorProps: {
             attributes: {
@@ -127,21 +131,20 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 if (isMovedAndSliced(moved, slice)) {
                     event.preventDefault();
                     event.stopPropagation();
-                    console.log(event.clientX);
-                    console.log(event.clientY);
+                    
                     const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
-                    console.log(pos)
-
                     const doc = editor.state.doc;
                     const paragraphs = collectParagraphs(doc);
                     const draggedValDetailsId = slice.content.firstChild?.attrs.valDetailsId;
+
                     if (!draggedValDetailsId) return false;
                     const draggedIdx = paragraphs.findIndex(item => item.valDetailsId === draggedValDetailsId);
-
+                    
                     if (draggedIdx === -1) return false;
                     const targetIdx = findTargetIndex(paragraphs, pos, draggedValDetailsId);
+                    
                     if (draggedIdx === targetIdx) return false;
-
+                    
                     if (isDraggedIdxDifferentThanTargetIdx(draggedIdx, targetIdx)) {
                         // Parse latest editor state to details
                         const html = editor.getHTML();
@@ -225,7 +228,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                         {debugOpen ? 'Hide Debug' : 'Show Debug'}
                     </button>
                 </div>
-                <EditorContent editor={editor} />
+                <EditorContent editor={editor} data-testid="editor-content" />
             </section>
             {debugOpen && (
                 <div style={{ background: '#222', color: '#a3e635', fontFamily: 'monospace', fontSize: 12, padding: 12, marginTop: 8, borderRadius: 6 }}>

@@ -23,6 +23,8 @@ export default defineConfig({
         'test/**',
         '**/*.test.{ts,tsx}',
         '**/.github/**',
+        '*.css',
+        'src/types/**',
       ],
     },
   },

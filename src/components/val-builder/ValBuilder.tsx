@@ -51,7 +51,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
     useEffect(() => {
         if (currentSectionObj) {
-            console.log(currentSectionObj.groupId);
             setCurrentGroupId(currentSectionObj.groupId);
         }
     }, [currentSectionObj, setCurrentGroupId]);
@@ -67,7 +66,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
     useEffect(() => {
         if (!allDetailsLoading) {
-            console.log(fetchedAllValDetails);
             setAllValDetails(fetchedAllValDetails || []);
         }
     }, [fetchedAllValDetails, setAllValDetails, allDetailsLoading]);
@@ -142,7 +140,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
         // addItem({ itemText: content, templateItemId: Number(id) });
     };
 
-    const handleCommentChange = (content: string) => {
+    const handleEditorChange = (content: string) => {
         const newDetails = convertEditorContentToDetails(content);
         updateSectionDetails(newDetails);
         updateEditorContent(content);
@@ -265,7 +263,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                     })) : []}
                     mode={mode}
                     onCardDragStart={handleCardDragStart}
-                    onEditorContentChange={handleCommentChange}
+                    onEditorContentChange={handleEditorChange}
                     onUpdateValDetail={handleUpdateValDetail}
                 />
             )}

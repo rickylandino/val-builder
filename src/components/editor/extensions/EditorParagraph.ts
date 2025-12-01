@@ -14,6 +14,16 @@ export const EditorParagraph = Paragraph.extend({
                     return {};
                 },
             },
+            testId: {
+                default: '',
+                parseHTML: element => element.dataset.testId || '',
+                renderHTML: attributes => {
+                    if (attributes.testId) {
+                        return { 'data-test-id': attributes.testId };
+                    }
+                    return {};
+                },
+            },
             class: {
                 default: null,
                 parseHTML: element => {

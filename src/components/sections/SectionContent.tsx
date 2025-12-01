@@ -5,7 +5,7 @@ import type { ValDetail } from '@/types/api';
 import { FormatOptionsDialog } from '../val-builder/FormatOptionsDialog';
 import { useValBuilder } from '@/contexts/ValBuilderContext';
 
-interface CardData {
+export interface CardData {
     id: string;
     content: string;
     type: 'text' | 'special';
