@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import type { ValDetail } from '@/types/api';
 import { FormatOptionsDialog } from '../val-builder/FormatOptionsDialog';
 import { useValBuilder } from '@/contexts/ValBuilderContext';
+import { CommentSidebar } from '../comments/CommentSidebar';
 
 export interface CardData {
     id: string;
@@ -126,6 +127,10 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                         />
                     </div>
                 </div>
+
+                {/* <div className="flex flex-col w-1/4 min-w-[220px] max-w-[400px] bg-white border-l border-gray-200 p-4">
+                    <CommentSidebar valId={undefined} readOnly={true} />
+                </div> */}
             </div>
 
             <FormatOptionsDialog

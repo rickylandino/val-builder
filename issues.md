@@ -1,0 +1,2 @@
+- fix when builder section has no content - should render blank editor
+- remove chevrons when rendering

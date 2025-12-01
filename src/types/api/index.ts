@@ -9,4 +9,5 @@ export * from './ValSubContent';
 export * from './ValSubContentItem';
 export * from './ValAnnotation';
 export * from './ValTask';
+export * from './ValPdfAttachment';
 export * from './ApiResponse';

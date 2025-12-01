@@ -108,7 +108,7 @@ describe('SectionContent', () => {
     });
 
     // Cleanup
-    document.body.removeChild(mockDiv);
+    mockDiv.remove();
   });
 
   it('does not open format dialog when handleFormatIconClick is called without tiptap-editor', async () => {
@@ -160,7 +160,7 @@ describe('SectionContent', () => {
     // The format dialog should not be visible
     expect(screen.queryByText('Format Options')).not.toBeInTheDocument();
 
-    document.body.removeChild(mockDiv);
+    mockDiv.remove();
   });
 
   it('calls handleDeleteIconClick when delete icon is clicked', async () => {
@@ -238,7 +238,7 @@ describe('SectionContent', () => {
       expect(screen.getByText(/Test content 1/)).toBeInTheDocument();
     });
 
-    document.body.removeChild(mockDiv);
+    mockDiv.remove();
   });
 
   it('does not call handleSaveFormat when selectedDetail is null', async () => {
@@ -352,7 +352,7 @@ describe('SectionContent', () => {
       expect(screen.queryByText('Format Options')).not.toBeInTheDocument();
     });
 
-    document.body.removeChild(mockDiv);
+    mockDiv.remove();
   });
 
   it('does not save format when updateSingleValDetail is not a function', async () => {
@@ -389,6 +389,6 @@ describe('SectionContent', () => {
       expect(screen.getByText('Format Options')).toBeInTheDocument();
     });
 
-    document.body.removeChild(mockDiv);
+    mockDiv.remove();
   });
 });

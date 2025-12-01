@@ -54,7 +54,7 @@ describe('Input', () => {
 
   it('renders with default value', () => {
     render(<Input defaultValue="default text" />);
-    const input = screen.getByRole('textbox') as HTMLInputElement;
+    const input = screen.getByRole('textbox') as HTMLInputElement; //NOSONAR - keeping type assertion for next line
     expect(input.value).toBe('default text');
   });
 

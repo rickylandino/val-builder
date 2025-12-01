@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent, within, waitFor } from '@testing-library/react';
+import { describe, it, expect } from 'vitest';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ValHeadersTable } from '@/components/vals/ValHeadersTable';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';

@@ -1,5 +1,8 @@
+import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PdfAttachmentsDialog } from '@/components/val-attachments/PdfAttachmentsDialog';
+import { useValBuilder } from '@/contexts/ValBuilderContext';
 
 interface HeaderProps {
   client: string;
@@ -16,6 +19,9 @@ export const Header: React.FC<HeaderProps> = ({
   planYearEnd,
   onCloseDrawer,
 }) => {
+  const [pdfAttachmentsOpen, setPdfAttachmentsOpen] = useState(false);
+  const { valId } = useValBuilder();
+
   // Format date strings to yyyy-MM-dd
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
@@ -64,7 +70,11 @@ export const Header: React.FC<HeaderProps> = ({
           <Button variant="inverse" size="sm">
             Comments & Tasks
           </Button>
-          <Button variant="inverse" size="sm">
+          <Button 
+            variant="inverse" 
+            size="sm"
+            onClick={() => setPdfAttachmentsOpen(true)}
+          >
             PDF Attachments
           </Button>
           <Button variant="inverse" size="sm">
@@ -89,6 +99,12 @@ export const Header: React.FC<HeaderProps> = ({
           )}
         </div>
       </div>
+      
+      <PdfAttachmentsDialog 
+        open={pdfAttachmentsOpen} 
+        onOpenChange={setPdfAttachmentsOpen} 
+        valId={valId} 
+      />
     </header>
   );
 };

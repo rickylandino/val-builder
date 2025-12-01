@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { DraggableCard, highlightChevrons } from '@/components/cards/DraggableCard';
+import { DraggableCard } from '@/components/cards/DraggableCard';
+import { highlightChevrons } from '@/lib/utils';
 
 describe('DraggableCard', () => {
   it('renders card content', () => {

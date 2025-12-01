@@ -67,8 +67,8 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
         onCreate: ({ editor }) => {
             editorInstanceRef.current = editor;
             // Expose editor for testing
-            if (typeof window !== 'undefined' && import.meta.env.MODE === 'test') {
-                (window as any).__tiptapEditor = editor;
+            if (typeof globalThis !== 'undefined' && import.meta.env.MODE === 'test') {
+                (globalThis as any).__tiptapEditor = editor;
             }
         },
         editorProps: {
@@ -131,7 +131,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
                 if (isMovedAndSliced(moved, slice)) {
                     event.preventDefault();
                     event.stopPropagation();
-                    
+
                     const pos = view.posAtCoords({ left: event.clientX, top: event.clientY });
                     const doc = editor.state.doc;
                     const paragraphs = collectParagraphs(doc);

@@ -1,3 +1,4 @@
+import { highlightChevrons } from '@/lib/utils';
 import { useState } from 'react';
 
 interface DraggableCardProps {
@@ -5,22 +6,6 @@ interface DraggableCardProps {
   content: string;
   onDragStart: (id: string, content: string) => void;
 }
-
-  // Highlight chevrons in card content
-export const highlightChevrons = (html: string) => {
-    if (!html) return '';
-    // Remove any existing chevron-placeholder spans
-    let cleanHtml = html.replaceAll(/<span class="chevron-placeholder"[^>]*>(.*?)<\/span>/g, '$1');
-    // Replace both HTML entities and raw chevrons
-      cleanHtml = cleanHtml
-        .replaceAll(/(&lt;&lt;|&#60;&#60;|&#x3C;&#x3C;|<<)\s*([\s\S]*?)\s*(&gt;&gt;|&#62;&#62;|&#x3E;&#x3E;|>>)/g, (_, open, content, close) => { //NOSONAR
-          return `<span class="chevron-placeholder font-bold text-primary-foreground bg-primary px-1 rounded" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
-        })
-        .replaceAll(/(<<)\s*([\s\S]*?)\s*(>>)/g, (_, open, content, close) => { //NOSONAR
-          return `<span class="chevron-placeholder font-bold text-primary-foreground bg-primary px-1 rounded" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
-        });
-    return cleanHtml;
-};
 
 export const DraggableCard: React.FC<DraggableCardProps> = ({
   id,
@@ -51,17 +36,6 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
       aria-label="Draggable card"
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onKeyDown={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          // Optionally trigger drag logic for keyboard users
-          setIsDragging(true);
-        }
-      }}
-      onKeyUp={e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          setIsDragging(false);
-        }
-      }}
     >
       <div
         className="text-foreground leading-relaxed text-sm"
