@@ -26,8 +26,7 @@ const mockAttachment = {
 
 describe('PdfAttachmentsDialog', () => {
 	it('auto-populates name from selected PDF file', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false }); 
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false }); 
 		renderDialog();
 		const input = screen.getByLabelText(/select pdf file/i);
 		const file = new File(['test'], 'resume.pdf', { type: 'application/pdf' });
@@ -38,11 +37,9 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('uploads PDF successfully and shows success toast', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false });
 		const mutateAsync = vi.fn().mockResolvedValue({});
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useUploadPdfAttachment').mockReturnValue({ mutateAsync });
+		(vi.spyOn(hooks, 'useUploadPdfAttachment') as any).mockReturnValue({ mutateAsync });
 		// Mock FileReader
 		const fileReaderMock = {
 			readAsDataURL: vi.fn(function(this: any, file: File) {
@@ -74,11 +71,9 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('shows error toast if upload fails', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false });
 		const mutateAsync = vi.fn().mockRejectedValue(new Error('fail'));
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useUploadPdfAttachment').mockReturnValue({ mutateAsync });
+		(vi.spyOn(hooks, 'useUploadPdfAttachment') as any).mockReturnValue({ mutateAsync });
 		// Mock FileReader
 		const fileReaderMock = {
 			readAsDataURL: vi.fn(function(this: any, file: File) {
@@ -104,9 +99,8 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('shows success toast after download', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [mockAttachment], isLoading: false });
-		vi.spyOn(service.valPdfAttachmentsService, 'downloadToFile').mockResolvedValue();
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [mockAttachment], isLoading: false });
+		(vi.spyOn(service.valPdfAttachmentsService, 'downloadToFile') as any).mockResolvedValue();
 		renderDialog();
 		fireEvent.click(screen.getByTitle(/download pdf/i));
 		await waitFor(() => {
@@ -115,12 +109,10 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('shows success toast after delete', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [mockAttachment], isLoading: false });
-		vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [mockAttachment], isLoading: false });
+		(vi.spyOn(globalThis, 'confirm') as any).mockReturnValue(true);
 		const deleteSpy = (vi.fn() as any).mockResolvedValue();
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useDeletePdfAttachment').mockReturnValue({ mutateAsync: deleteSpy, isPending: false });
+		(vi.spyOn(hooks, 'useDeletePdfAttachment') as any).mockReturnValue({ mutateAsync: deleteSpy, isPending: false });
 		renderDialog();
 		fireEvent.click(screen.getByTitle(/delete attachment/i));
 		await waitFor(() => {
@@ -132,8 +124,7 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('renders dialog with empty state', () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false });
 		renderDialog();
 		expect(screen.getAllByText(/pdf attachments/i).length).toBeGreaterThan(0);
 		expect(screen.getByText(/no attachments/i)).toBeInTheDocument();
@@ -141,15 +132,13 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('renders loading state', () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: undefined, isLoading: true });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: undefined, isLoading: true });
 		renderDialog();
 		expect(screen.getByText(/loading attachments/i)).toBeInTheDocument();
 	});
 
 	it('renders with attachments', () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [mockAttachment], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [mockAttachment], isLoading: false });
 		renderDialog();
 		expect(screen.getByText('resume')).toBeInTheDocument();
 		expect(screen.getByText(/pdf attachment #1/i)).toBeInTheDocument();
@@ -158,8 +147,7 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('calls download service on download button click', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [mockAttachment], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [mockAttachment], isLoading: false });
 		const downloadSpy = vi.spyOn(service.valPdfAttachmentsService, 'downloadToFile').mockResolvedValue();
 		renderDialog();
 		fireEvent.click(screen.getByTitle(/download pdf/i));
@@ -167,32 +155,27 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('calls delete mutation on delete button click and confirm', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [mockAttachment], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [mockAttachment], isLoading: false });
 		vi.spyOn(globalThis, 'confirm').mockReturnValue(true);
 		const deleteSpy = (vi.fn() as any).mockResolvedValue();
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useDeletePdfAttachment').mockReturnValue({ mutateAsync: deleteSpy, isPending: false });
+		(vi.spyOn(hooks, 'useDeletePdfAttachment') as any).mockReturnValue({ mutateAsync: deleteSpy, isPending: false });
 		renderDialog();
 		fireEvent.click(screen.getByTitle(/delete attachment/i));
 		await waitFor(() => expect(deleteSpy).toHaveBeenCalledWith({ id: 1, valId: 1 }));
 	});
 
 	it('does not call delete if confirm is cancelled', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [mockAttachment], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [mockAttachment], isLoading: false });
 		vi.spyOn(globalThis, 'confirm').mockReturnValue(false);
 		const deleteSpy = vi.fn();
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useDeletePdfAttachment').mockReturnValue({ mutateAsync: deleteSpy, isPending: false });
+		(vi.spyOn(hooks, 'useDeletePdfAttachment') as any).mockReturnValue({ mutateAsync: deleteSpy, isPending: false });
 		renderDialog();
 		fireEvent.click(screen.getByTitle(/delete attachment/i));
 		await waitFor(() => expect(deleteSpy).not.toHaveBeenCalled());
 	});
 
 	it('shows error toast for invalid file type', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false });
 		renderDialog();
 		const input = screen.getByLabelText(/select pdf file/i);
 		const file = new File(['test'], 'test.txt', { type: 'text/plain' });
@@ -202,8 +185,7 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('shows error toast if upload is attempted with no name', async () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false });
 		renderDialog();
 		// Simulate file selection
 		const input = screen.getByLabelText(/select pdf file/i);
@@ -219,8 +201,7 @@ describe('PdfAttachmentsDialog', () => {
 	});
 
 	it('close button calls onOpenChange', () => {
-        //@ts-ignore - Ignore as we are only mocking part of the return value
-		vi.spyOn(hooks, 'useValPdfAttachments').mockReturnValue({ data: [], isLoading: false });
+		(vi.spyOn(hooks, 'useValPdfAttachments') as any).mockReturnValue({ data: [], isLoading: false });
 		const onOpenChange = vi.fn();
 		renderDialog({ onOpenChange });
 		// There are multiple 'Close' buttons, click the first one

@@ -1,45 +1,40 @@
 import { useState } from 'react';
+import { useValBuilder } from '@/contexts/ValBuilderContext';
+import { useValAnnotations, useCreateValAnnotation, useDeleteValAnnotation } from '@/hooks/api/useValAnnotations';
 import type { Editor } from '@tiptap/react';
-import type { CommentThread } from '../../types/comments';
 import { Button } from '@/components/ui/button';
 
 interface CommentSidebarProps {
-  editor: Editor | null;
-  threads: CommentThread[];
-  activeThreadId: string | null;
-  onAddComment: (threadId: string, content: string) => void;
-  onCreateThread: (content: string) => void;
-  onResolveThread: (threadId: string) => void;
-  onDeleteComment: (threadId: string, commentId: string) => void;
-  onThreadClick: (threadId: string) => void;
+  editor?: Editor | null;
+  activeThreadId?: string | null;
+  onThreadClick?: (annotationId: number) => void;
 }
 
-export const CommentSidebar: React.FC<CommentSidebarProps> = ({
-  threads,
-  activeThreadId,
-  onAddComment,
-  onCreateThread,
-  onResolveThread,
-  onDeleteComment,
-  onThreadClick,
-}) => {
-  const [newCommentContent, setNewCommentContent] = useState<Record<string, string>>({});
-  const [quickCommentContent, setQuickCommentContent] = useState('');
+export const CommentSidebar: React.FC<CommentSidebarProps> = () => {
+  const { valId, currentGroupId } = useValBuilder();
+  const { data: annotations = [], isLoading } = useValAnnotations(valId);
+  const createMutation = useCreateValAnnotation();
+  const deleteMutation = useDeleteValAnnotation();
+  const [newCommentContent, setNewCommentContent] = useState('');
 
-  const handleAddComment = (threadId: string) => {
-    const content = newCommentContent[threadId]?.trim();
-    if (content) {
-      onAddComment(threadId, content);
-      setNewCommentContent({ ...newCommentContent, [threadId]: '' });
-    }
+  // Only show annotations for the current group
+  const groupAnnotations = annotations.filter(a => a.groupId === currentGroupId);
+
+  const handleAddComment = async () => {
+    const content = newCommentContent.trim();
+    if (!content) return;
+    await createMutation.mutateAsync({
+      author: 'Ricky Landino',
+      authorId: 'rlandino',
+      annotationContent: content,
+      valId,
+      groupId: currentGroupId,
+    });
+    setNewCommentContent('');
   };
 
-  const handleQuickComment = () => {
-    const content = quickCommentContent.trim();
-    if (content) {
-      onCreateThread(content);
-      setQuickCommentContent('');
-    }
+  const handleDeleteComment = async (annotationId: number) => {
+    await deleteMutation.mutateAsync({ id: annotationId, valId });
   };
 
   const formatDate = (dateString: string) => {
@@ -62,28 +57,28 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
       <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900">Comments</h3>
         <span className="inline-flex items-center justify-center min-w-[24px] h-6 px-2 text-xs font-semibold text-white bg-primary rounded-full">
-          {threads.filter(t => !t.resolved).length}
+          {groupAnnotations.length}
         </span>
       </div>
 
       <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
         <textarea
           className="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none"
-          placeholder="Add a quick comment..."
-          value={quickCommentContent}
-          onChange={(e) => setQuickCommentContent(e.target.value)}
+          placeholder="Add a comment..."
+          value={newCommentContent}
+          onChange={(e) => setNewCommentContent(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              handleQuickComment();
+              handleAddComment();
             }
           }}
           rows={3}
         />
         <Button
           className="w-full mt-2"
-          onClick={handleQuickComment}
-          disabled={!quickCommentContent.trim()}
+          onClick={handleAddComment}
+          disabled={!newCommentContent.trim() || createMutation.isPending}
           size="sm"
         >
           Add Comment
@@ -91,130 +86,39 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = ({
       </div>
 
       <div className="flex-1 overflow-y-auto space-y-3">
-        {threads.map((thread) => (
-          <button
-            key={thread.id}
-            tabIndex={0}
-            className={`p-3 rounded-lg border cursor-pointer transition-all ${
-              activeThreadId === thread.id 
-                ? 'border-primary bg-primary/5 shadow-md' 
-                : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
-            } ${
-              thread.resolved 
-                ? 'opacity-60' 
-                : ''
-            }`}
-            onClick={() => onThreadClick(thread.id)}
-            onKeyDown={(e: React.KeyboardEvent) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                onThreadClick(thread.id);
-              }
-            }}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <div>
-                {thread.resolved ? (
-                  <span className="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-green-700 bg-green-100 rounded">
-                    <span>✓</span> Resolved
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded">
-                    Open
-                  </span>
-                )}
+        {(() => {
+          if (isLoading) {
+            return <div className="text-center py-8 text-gray-500">Loading comments...</div>;
+          }
+          if (groupAnnotations.length === 0) {
+            return (
+              <div className="flex flex-col items-center justify-center py-8 text-center text-gray-500">
+                <p className="text-sm font-medium mb-1">No comments yet</p>
+                <small className="text-xs text-gray-400">Add a comment above to get started</small>
               </div>
-              <Button
-                variant="secondary"
-                size="sm"
-                className="h-6 px-2 text-xs"
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  onResolveThread(thread.id);
-                }}
-              >
-                {thread.resolved ? 'Reopen' : 'Resolve'}
-              </Button>
-            </div>
-
-            <div className="space-y-2">
-              {thread.comments.map((comment) => (
-                <div key={comment.id} className="py-2 border-b border-gray-100 last:border-b-0">
-                  <div className="flex items-start justify-between mb-1">
-                    <div className="flex items-center gap-2">
-                      {comment.author.avatar ? (
-                        <img 
-                          src={comment.author.avatar} 
-                          alt={comment.author.name} 
-                          className="w-6 h-6 rounded-full object-cover" 
-                        />
-                      ) : (
-                        <div className="flex items-center justify-center w-6 h-6 text-xs font-semibold text-white bg-primary rounded-full">
-                          {comment.author.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <span className="text-sm font-medium text-gray-900">{comment.author.name}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">{formatDate(comment.createdAt)}</span>
-                      <button
-                        className="text-gray-400 hover:text-red-600 transition-colors text-lg leading-none"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeleteComment(thread.id, comment.id);
-                        }}
-                        aria-label="Delete comment"
-                      >
-                        ×
-                      </button>
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-700 ml-8">{comment.content}</div>
+            );
+          }
+          return groupAnnotations.map(annotation => (
+            <div key={annotation.annotationId} className="p-3 rounded-lg border border-gray-200 bg-white">
+              <div className="flex items-center gap-2 mb-1">
+                <div className="flex items-center justify-center w-6 h-6 text-xs font-semibold text-white bg-primary rounded-full">
+                  {annotation.author.charAt(0).toUpperCase()}
                 </div>
-              ))}
-            </div>
-
-            {!thread.resolved && (
-              <div className="mt-2 pt-2 border-t border-gray-200">
-                <textarea
-                  className="w-full px-2 py-1.5 text-sm border border-gray-300 rounded focus:outline-none focus:ring-1 focus:ring-primary focus:border-transparent resize-none"
-                  placeholder="Add a reply..."
-                  value={newCommentContent[thread.id] || ''}
-                  onChange={(e) =>
-                    setNewCommentContent({ ...newCommentContent, [thread.id]: e.target.value })
-                  }
-                  onClick={(e) => e.stopPropagation()}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      handleAddComment(thread.id);
-                    }
-                  }}
-                  rows={2}
-                />
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="w-full mt-1.5 h-7 text-xs"
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    handleAddComment(thread.id);
-                  }}
-                  disabled={!newCommentContent[thread.id]?.trim()}
+                <span className="text-sm font-medium text-gray-900">{annotation.author}</span>
+                <span className="text-xs text-gray-500">{formatDate(annotation.dateModified)}</span>
+                <button
+                  className="ml-auto text-gray-400 hover:text-red-600 transition-colors text-lg leading-none"
+                  onClick={() => handleDeleteComment(annotation.annotationId)}
+                  aria-label="Delete comment"
+                  disabled={deleteMutation.isPending}
                 >
-                  Reply
-                </Button>
+                  ×
+                </button>
               </div>
-            )}
-          </button>
-        ))}
-
-        {threads.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-8 text-center text-gray-500">
-            <p className="text-sm font-medium mb-1">No comments yet</p>
-            <small className="text-xs text-gray-400">Select text and click the comment button to add one</small>
-          </div>
-        )}
+              <div className="text-sm text-gray-700 ml-8">{annotation.annotationContent}</div>
+            </div>
+          ));
+        })()}
       </div>
     </div>
   );
