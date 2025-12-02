@@ -83,7 +83,7 @@ export const ManageValItems: React.FC<ManageValItemsProps> = ({ groupId = 1 }) =
             onValueChange={value => setCurrentGroupId(Number(value))}
             disabled={isSectionsLoading}
           >
-            <SelectTrigger>
+            <SelectTrigger data-testid="group-select-trigger">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -91,7 +91,7 @@ export const ManageValItems: React.FC<ManageValItemsProps> = ({ groupId = 1 }) =
               <SelectItem value="loading">Loading...</SelectItem>
             ) : (
               sections.map(section => (
-                <SelectItem key={section.groupId} value={section.groupId.toString()}>{section.sectionText}</SelectItem>
+                <SelectItem key={section.groupId} value={section.groupId.toString()} data-testid={`section-${section.groupId}`}>{section.sectionText}</SelectItem>
               ))
             )}
             </SelectContent>
@@ -220,10 +220,11 @@ export const ManageValItems: React.FC<ManageValItemsProps> = ({ groupId = 1 }) =
                 <div>
                   <Label htmlFor="indent">Indent</Label>
                   <Select
+                    aria-labelledby="indent-label"
                     value={editItem.indent?.toString() ?? "0"}
                     onValueChange={value => setEditItem({ ...editItem, indent: Number(value) })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="indent">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -238,10 +239,11 @@ export const ManageValItems: React.FC<ManageValItemsProps> = ({ groupId = 1 }) =
                 <div>
                   <Label htmlFor="blankLineAfter">Blank Line After</Label>
                   <Select
+                    aria-labelledby="blankLineAfter-label"
                     value={editItem.blankLineAfter?.toString() ?? "0"}
                     onValueChange={value => setEditItem({ ...editItem, blankLineAfter: Number(value) })}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="blankLineAfter">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>

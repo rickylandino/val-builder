@@ -71,7 +71,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />
@@ -91,7 +90,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -122,7 +120,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -152,7 +149,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -174,7 +170,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -209,7 +204,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -234,7 +228,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
             />,
             mockValDetails
@@ -252,7 +245,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -270,7 +262,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="preview-sections"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -285,7 +276,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="preview-final"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -300,7 +290,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
                 readOnly={true}
@@ -320,7 +309,6 @@ describe('SectionContent', () => {
             <SectionContent
                 cards={cards}
                 mode="edit"
-                onCardDragStart={onCardDragStart}
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
             />,
@@ -377,7 +365,6 @@ describe('SectionContent', () => {
                     <SectionContent
                         cards={cards}
                         mode="edit"
-                        onCardDragStart={onCardDragStart}
                         onEditorContentChange={onEditorContentChange}
                         onUpdateValDetail={onUpdateValDetail}
                     />
