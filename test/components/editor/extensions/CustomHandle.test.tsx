@@ -33,7 +33,6 @@ describe('CustomHandle Extension', () => {
 		const plugin = getPlugin(editor);
 		const decorations = plugin?.props.decorations?.call(plugin, editor.view.state);
 		const decs = decorations ? (decorations as any).find() : [];
-		// Simulate click on delete handle for first paragraph
 		const widget = decs[0].type.toDOM();
 		const delHandle = widget.querySelector('.delete-handle');
 		expect(delHandle).toBeTruthy();
@@ -45,7 +44,6 @@ describe('CustomHandle Extension', () => {
 		const plugin = getPlugin(editor);
 		const decorations = plugin?.props.decorations?.call(plugin, editor.view.state);
 		const decs = decorations ? (decorations as any).find() : [];
-		// Simulate click on format handle for second paragraph
 		const widget = decs[1].type.toDOM();
 		const formatHandle = widget.querySelector('.format-handle');
 		expect(formatHandle).toBeTruthy();

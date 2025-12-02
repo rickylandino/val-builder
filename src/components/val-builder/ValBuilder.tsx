@@ -19,7 +19,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
     const {
         setValId,
         currentGroupId,
-        setCurrentGroupId,
         allValDetails,
         setAllValDetails,
         editorContent,
@@ -34,26 +33,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
     } = useValBuilder();
 
     const { data: valSections, isLoading: sectionsLoading, error: sectionsError } = useValSections();
-    const [currentSectionIndex, setCurrentSectionIndex] = useState(0);
     const [mode, setMode] = useState<ViewMode>('edit');
-
-    // Create sections array from API data
-    const sections = useMemo(() =>
-        valSections
-            ? [...valSections]
-                .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
-                .map(section => section.sectionText || `Section ${section.groupId}`)
-            : []
-        , [valSections]);
-
-    const currentSection = sections[currentSectionIndex];
-    const currentSectionObj = valSections ? valSections[currentSectionIndex] : undefined;
-
-    useEffect(() => {
-        if (currentSectionObj) {
-            setCurrentGroupId(currentSectionObj.groupId);
-        }
-    }, [currentSectionObj, setCurrentGroupId]);
 
     // Fetch ALL ValDetails upfront (not per section) - cached for smooth transitions
     const { data: fetchedAllValDetails, isLoading: allDetailsLoading } = useAllValDetails(valHeader.valId ?? 0);
@@ -112,33 +92,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
             </div>
         );
     }
-
-    const handleSectionChange = (section: string) => {
-        const index = sections.indexOf(section);
-        
-        if (index === -1) {
-            console.warn('Section not found in sections array:', section);
-        } else {
-            setCurrentSectionIndex(index);
-        }
-    };
-
-    const handlePrevSection = () => {
-        if (currentSectionIndex > 0) {
-            setCurrentSectionIndex(currentSectionIndex - 1);
-        }
-    };
-
-    const handleNextSection = () => {
-        if (currentSectionIndex < sections.length - 1) {
-            setCurrentSectionIndex(currentSectionIndex + 1);
-        }
-    };
-
-    const handleCardDragStart = () => {
-        // Future: implement drag to add template item
-        // addItem({ itemText: content, templateItemId: Number(id) });
-    };
 
     const handleEditorChange = (content: string) => {
         const newDetails = convertEditorContentToDetails(content);
@@ -229,11 +182,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
             {!isPreviewMode && (
                 <div className="">
                     <SectionNavigation
-                        sections={sections}
-                        currentSection={currentSection}
-                        onSectionChange={handleSectionChange}
-                        onPrevSection={handlePrevSection}
-                        onNextSection={handleNextSection}
+                        sections={valSections ? [...valSections].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0)) : []}
                     />
                     {/* <Button
                         variant="outline"
@@ -262,7 +211,6 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                         type: 'text',
                     })) : []}
                     mode={mode}
-                    onCardDragStart={handleCardDragStart}
                     onEditorContentChange={handleEditorChange}
                     onUpdateValDetail={handleUpdateValDetail}
                 />
@@ -278,8 +226,13 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                     )}
                 </div>
                 <div className="flex gap-3">
-                    <Button variant="secondary" data-testid="cancel-btn">
-                        Cancel
+                    <Button
+                        variant="default"
+                        onClick={handleSave}
+                        disabled={!isDirty || saveChanges.isPending}
+                        data-testid="save-btn"
+                    >
+                        {saveChanges.isPending ? 'Saving...' : 'Save'}
                     </Button>
                     <Button
                         variant="secondary"
@@ -288,13 +241,9 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                     >
                         Print PDF
                     </Button>
-                    <Button
-                        variant="default"
-                        onClick={handleSave}
-                        disabled={!isDirty || saveChanges.isPending}
-                        data-testid="save-btn"
-                    >
-                        {saveChanges.isPending ? 'Saving...' : 'Save'}
+                    
+                    <Button variant="secondary" data-testid="cancel-btn" onClick={onCloseDrawer}>
+                        Cancel
                     </Button>
                 </div>
             </footer>

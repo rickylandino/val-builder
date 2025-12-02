@@ -112,7 +112,7 @@ export const CreateCompanyDialog = () => {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="shadow-sm bg-[var(--color-primary)] text-[var(--color-primary-foreground)] hover:bg-[var(--color-primary)]/90">
+        <Button>
           <Plus className="mr-2 h-4 w-4" />
           New Company
         </Button>

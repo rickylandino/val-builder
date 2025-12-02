@@ -3,27 +3,13 @@ import { useValBuilder } from '@/contexts/ValBuilderContext';
 import { useValAnnotations, useCreateValAnnotation, useDeleteValAnnotation } from '@/hooks/api/useValAnnotations';
 import type { Editor } from '@tiptap/react';
 import { Button } from '@/components/ui/button';
+import { formatRelativeDate } from '@/lib/utils';
 
 interface CommentSidebarProps {
   editor?: Editor | null;
   activeThreadId?: string | null;
   onThreadClick?: (annotationId: number) => void;
 }
-
-export const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diff = now.getTime() - date.getTime();
-    const minutes = Math.floor(diff / 60000);
-    const hours = Math.floor(diff / 3600000);
-    const days = Math.floor(diff / 86400000);
-
-    if (minutes < 1) return 'Just now';
-    if (minutes < 60) return `${minutes}m ago`;
-    if (hours < 24) return `${hours}h ago`;
-    if (days < 7) return `${days}d ago`;
-    return date.toLocaleDateString();
-  };
 
 export const CommentSidebar: React.FC<CommentSidebarProps> = () => {
   const { valId, currentGroupId } = useValBuilder();
@@ -105,7 +91,7 @@ export const CommentSidebar: React.FC<CommentSidebarProps> = () => {
                   {annotation.author.charAt(0).toUpperCase()}
                 </div>
                 <span className="text-sm font-medium text-gray-900">{annotation.author}</span>
-                <span className="text-xs text-gray-500">{formatDate(annotation.dateModified)}</span>
+                <span className="text-xs text-gray-500">{formatRelativeDate(annotation.dateModified)}</span>
                 <button
                   className="ml-auto text-gray-400 hover:text-red-600 transition-colors text-lg leading-none"
                   onClick={() => handleDeleteComment(annotation.annotationId)}

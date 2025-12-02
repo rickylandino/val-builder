@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { CommentSidebar, formatDate } from '@/components/comments/CommentSidebar';
+import { CommentSidebar } from '@/components/comments/CommentSidebar';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
 import * as hooks from '@/hooks/api/useValAnnotations';
 
@@ -27,12 +27,28 @@ const mockAnnotations = [
   },
 ];
 
-function renderSidebar({ valId = 101, groupId = 5, annotations = mockAnnotations, isLoading = false, createMutation, deleteMutation } = {}) {
+type RenderSidebarOptions = {
+  valId?: number;
+  groupId?: number;
+  annotations?: typeof mockAnnotations;
+  isLoading?: boolean;
+  createMutation?: { mutateAsync: any; isPending: boolean };
+  deleteMutation?: { mutateAsync: any; isPending: boolean };
+};
+
+function renderSidebar({
+  valId = 101,
+  groupId = 5,
+  annotations = mockAnnotations,
+  isLoading = false,
+  createMutation,
+  deleteMutation,
+}: RenderSidebarOptions = {}) {
   (vi.spyOn(hooks, 'useValAnnotations') as any).mockReturnValue({ data: annotations, isLoading });
   (vi.spyOn(hooks, 'useCreateValAnnotation') as any).mockReturnValue(createMutation || { mutateAsync: vi.fn(), isPending: false });
   (vi.spyOn(hooks, 'useDeleteValAnnotation') as any).mockReturnValue(deleteMutation || { mutateAsync: vi.fn(), isPending: false });
   return render(
-    <ValBuilderProvider initialValId={valId} initialCurrentGroupId={groupId} initialAllValDetails={[]}> 
+    <ValBuilderProvider initialValId={valId} initialCurrentGroupId={groupId} initialAllValDetails={[]}>
       <CommentSidebar />
     </ValBuilderProvider>
   );
@@ -123,14 +139,5 @@ describe('CommentSidebar', () => {
     renderSidebar();
     expect(screen.getByText('First comment')).toBeInTheDocument();
     expect(screen.getByText('Second comment')).toBeInTheDocument();
-  });
-
-  it('formats date correctly for recent and old comments', () => {
-    // Use the formatDate utility directly
-    const now = new Date();
-    expect(formatDate(now.toISOString())).toBe('Just now');
-    expect(formatDate(new Date(now.getTime() - 5 * 60000).toISOString())).toBe('5m ago');
-    expect(formatDate(new Date(now.getTime() - 2 * 3600000).toISOString())).toBe('2h ago');
-    expect(formatDate(new Date(now.getTime() - 3 * 86400000).toISOString())).toBe('3d ago');
   });
 });

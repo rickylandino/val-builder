@@ -17,7 +17,6 @@ describe('EditorParagraph Extension', () => {
 		editor.commands.setContent('<p data-val-details-id="abc123">Test</p>');
 		const node = editor.state.doc.firstChild;
 		expect(node?.attrs.valDetailsId).toBe('abc123');
-		// Render HTML
 		const html = editor.getHTML();
 		expect(html).toContain('data-val-details-id="abc123"');
 	});

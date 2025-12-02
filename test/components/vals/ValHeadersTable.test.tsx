@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll, vi, afterAll } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ValHeadersTable } from '@/components/vals/ValHeadersTable';
+import * as ValBuilderDrawerModule from '@/components/val-builder/ValBuilderDrawer';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
+import * as ValBuilderContext from '@/contexts/ValBuilderContext';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ValHeader } from '@/types/api/ValHeader';
 
@@ -32,9 +34,64 @@ function makeValHeader(overrides: Partial<ValHeader> = {}): ValHeader {
 	};
 }
 
+let queryClient: QueryClient;
+
+const renderValBuilder = (valHeaders: ValHeader[]) => {
+    queryClient = new QueryClient({
+        defaultOptions: {
+            queries: { retry: false },
+        },
+    });
+
+    return render(
+        <QueryClientProvider client={queryClient}>
+            <ValBuilderProvider>
+                <ValHeadersTable valHeaders={valHeaders} />
+            </ValBuilderProvider>
+        </QueryClientProvider>
+    );
+};
+
 describe('ValHeadersTable', () => {
+	beforeAll(() => {
+		vi.spyOn(ValBuilderDrawerModule, 'ValBuilderDrawer').mockImplementation(({ open, onClose }) => {
+			return (
+				<>
+					{open ? (
+						<button data-testid="cancel-btn" onClick={onClose}>Cancel</button>
+					) : (
+						<div style={{ display: 'none' }} />
+					)}
+				</>
+			);
+		});
+	});
+	afterAll(() => {
+		vi.restoreAllMocks();
+	});
+	it('calls context methods on handleClose', async () => {
+		const resetChanges = vi.fn();
+		const setValId = vi.fn();
+		const setCurrentGroupId = vi.fn();
+		(vi.spyOn(ValBuilderContext, 'useValBuilder') as any).mockReturnValue({
+			resetChanges,
+			setValId,
+			setCurrentGroupId,
+			// Provide other context values as needed for rendering
+		});
+		const valHeaders = [makeValHeader({ valId: 123 })];
+		renderValBuilder(valHeaders);
+		const openBtn = screen.getByRole('button', { name: /open/i });
+		fireEvent.click(openBtn);
+		await waitFor(() => expect(screen.getByTestId('cancel-btn')).toBeInTheDocument());
+		fireEvent.click(screen.getByTestId('cancel-btn'));
+		expect(resetChanges).toHaveBeenCalled();
+		expect(setValId).toHaveBeenCalledWith(0);
+		expect(setCurrentGroupId).toHaveBeenCalledWith(1);
+		vi.restoreAllMocks();
+	});
 	it('renders empty state when no valHeaders', () => {
-		render(<ValHeadersTable valHeaders={[]} />);
+		renderValBuilder([]);
 		expect(screen.getByText(/no valuation letters found/i)).toBeInTheDocument();
 	});
 
@@ -43,7 +100,7 @@ describe('ValHeadersTable', () => {
 			makeValHeader({ valId: 1, valDescription: 'VAL 1' }),
 			makeValHeader({ valId: 2, valDescription: 'VAL 2', finalizedBy: null }),
 		];
-		render(<ValHeadersTable valHeaders={valHeaders} />);
+		renderValBuilder(valHeaders);
 		expect(screen.getByText('VAL 1')).toBeInTheDocument();
 		expect(screen.getByText('VAL 2')).toBeInTheDocument();
 		// Finalized By fallback
@@ -61,26 +118,14 @@ describe('ValHeadersTable', () => {
 				finalizedBy: null,
 			}),
 		];
-		render(<ValHeadersTable valHeaders={valHeaders} />);
+		renderValBuilder(valHeaders);
 		// All fields should fallback to '-'
 		expect(screen.getAllByText('-').length).toBeGreaterThanOrEqual(5);
 	});
 
-
-	function renderWithProvider(ui: React.ReactNode) {
-		const queryClient = new QueryClient();
-		return render(
-			<QueryClientProvider client={queryClient}>
-				<ValBuilderProvider initialAllValDetails={[]} initialCurrentGroupId={1} initialValId={1}>
-					{ui}
-				</ValBuilderProvider>
-			</QueryClientProvider>
-		);
-	}
-
 	it('opens drawer with correct valHeader on button click', () => {
 		const valHeaders = [makeValHeader({ valId: 42, valDescription: 'VAL X' })];
-		renderWithProvider(<ValHeadersTable valHeaders={valHeaders} />);
+		renderValBuilder(valHeaders);
 		const openBtn = screen.getByRole('button', { name: /open/i });
 		fireEvent.click(openBtn);
 		// Drawer content should appear in portal
@@ -89,7 +134,7 @@ describe('ValHeadersTable', () => {
 
 	it('closes drawer when onClose is triggered', () => {
 		const valHeaders = [makeValHeader({ valId: 99 })];
-		renderWithProvider(<ValHeadersTable valHeaders={valHeaders} />);
+		renderValBuilder(valHeaders);
 		const openBtn = screen.getByRole('button', { name: /open/i });
 		fireEvent.click(openBtn);
         

@@ -280,7 +280,18 @@ export const ValBuilderProvider = ({
 
     const resetChanges = useCallback(() => {
         setChangesState({});
-    }, []);
+        // Find original details for current section
+        const section = changesState[currentGroupId];
+        if (section?.originalDetails) {
+            setCurrentDetails([...section.originalDetails]);
+            setEditorContent(generateHtmlContent(section.originalDetails));
+        } else {
+            // fallback: use allValDetails for current group
+            const valDetailsForGroup = allValDetails.filter(detail => detail.groupId === currentGroupId);
+            setCurrentDetails([...valDetailsForGroup]);
+            setEditorContent(generateHtmlContent(valDetailsForGroup));
+        }
+    }, [changesState, currentGroupId, allValDetails]);
 
     const value = useMemo(() => ({
         currentGroupId,

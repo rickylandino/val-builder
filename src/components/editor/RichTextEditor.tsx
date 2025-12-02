@@ -190,7 +190,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     });
 
     useEffect(() => {
-        if (editor && editorContent && editorContent !== editor.getHTML()) {
+        if (editorContent !== editor?.getHTML()) {
             editor.commands.setContent(editorContent);
             editor.chain().focus();
         }

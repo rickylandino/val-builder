@@ -1,83 +1,54 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SectionNavigation } from '@/components/sections/SectionNavigation';
+import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
+
+const sections = [
+  { groupId: 1, sectionText: 'Section 1' },
+  { groupId: 2, sectionText: 'Section 2' },
+  { groupId: 3, sectionText: 'Section 3' },
+];
+
+function renderWithProvider(ui: React.ReactElement) {
+  return render(
+    <ValBuilderProvider initialCurrentGroupId={2}>
+      {ui}
+    </ValBuilderProvider>
+  );
+}
 
 describe('SectionNavigation', () => {
-	const sections = ['Section 1', 'Section 2', 'Section 3'];
-	const currentSection = 'Section 2';
-	let onSectionChange: (section: string) => void;
-	let onPrevSection: () => void;
-	let onNextSection: () => void;
+  it('renders all sections and current section', () => {
+    renderWithProvider(<SectionNavigation sections={sections} />);
+    expect(screen.getByText('Sections')).toBeInTheDocument();
+    expect(screen.getByText('Section 2')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Prev Section/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Next Section/i })).toBeInTheDocument();
+  });
 
-	beforeEach(() => {
-		onSectionChange = vi.fn();
-		onPrevSection = vi.fn();
-		onNextSection = vi.fn();
-	});
+  it('changes section when a new section is selected', async () => {
+    renderWithProvider(<SectionNavigation sections={sections} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('combobox'));
+    await user.click(screen.getByText('Section 3'));
+    // Section 3 should now be selected
+    expect(screen.getByText('Section 3')).toBeInTheDocument();
+  });
 
-	it('renders all sections and current section', () => {
-		render(
-			<SectionNavigation
-				sections={sections}
-				currentSection={currentSection}
-				onSectionChange={onSectionChange}
-				onPrevSection={onPrevSection}
-				onNextSection={onNextSection}
-			/>
-		);
-		expect(screen.getByText('Sections')).toBeInTheDocument();
-		// Only the current section value is visible before opening the dropdown
-		expect(screen.getByText(currentSection)).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /Prev Section/i })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /Next Section/i })).toBeInTheDocument();
-	});
+  it('navigates to previous section when Prev Section button is clicked', async () => {
+    renderWithProvider(<SectionNavigation sections={sections} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /Prev Section/i }));
+    // Section 1 should now be selected
+    expect(screen.getByText('Section 1')).toBeInTheDocument();
+  });
 
-	it('calls onSectionChange when a new section is selected', async () => {
-		render(
-			<SectionNavigation
-				sections={sections}
-				currentSection={currentSection}
-				onSectionChange={onSectionChange}
-				onPrevSection={onPrevSection}
-				onNextSection={onNextSection}
-			/>
-		);
-		const user = userEvent.setup();
-		// Open select dropdown (Radix Select uses combobox role)
-		await user.click(screen.getByRole('combobox'));
-		// Now the options are rendered, select 'Section 3'
-		await user.click(screen.getByText('Section 3'));
-		expect(onSectionChange).toHaveBeenCalledWith('Section 3');
-	});
-
-	it('calls onPrevSection when Prev Section button is clicked', async () => {
-		render(
-			<SectionNavigation
-				sections={sections}
-				currentSection={currentSection}
-				onSectionChange={onSectionChange}
-				onPrevSection={onPrevSection}
-				onNextSection={onNextSection}
-			/>
-		);
-		const user = userEvent.setup();
-		await user.click(screen.getByRole('button', { name: /Prev Section/i }));
-		expect(onPrevSection).toHaveBeenCalledTimes(1);
-	});
-
-	it('calls onNextSection when Next Section button is clicked', async () => {
-		render(
-			<SectionNavigation
-				sections={sections}
-				currentSection={currentSection}
-				onSectionChange={onSectionChange}
-				onPrevSection={onPrevSection}
-				onNextSection={onNextSection}
-			/>
-		);
-		const user = userEvent.setup();
-		await user.click(screen.getByRole('button', { name: /Next Section/i }));
-		expect(onNextSection).toHaveBeenCalledTimes(1);
-	});
+  it('navigates to next section when Next Section button is clicked', async () => {
+    renderWithProvider(<SectionNavigation sections={sections} />);
+    const user = userEvent.setup();
+    await user.click(screen.getByRole('button', { name: /Next Section/i }));
+    // Section 3 should now be selected
+    expect(screen.getByText('Section 3')).toBeInTheDocument();
+  });
 });

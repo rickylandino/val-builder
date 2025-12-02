@@ -12,10 +12,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-
 import { ValHeadersTable } from '@/components/vals/ValHeadersTable';
 import { useValHeaders } from '@/hooks/api/useValHeaders';
 import { CreateValDialog } from '@/components/vals/CreateValDialog';
+
 
 export const LandingPage = () => {
   const { data: companies, isLoading, error } = useCompanies();
@@ -49,26 +49,7 @@ export const LandingPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[var(--color-secondary)] via-[var(--color-muted)] to-[var(--color-secondary)]">
-      {/* Header */}
-      <header className="bg-[var(--color-primary)]/95 backdrop-blur supports-[backdrop-filter]:bg-[var(--color-primary)]/60 border-b border-[var(--color-border)] sticky top-0">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-[var(--color-primary-foreground)]/10 rounded-lg">
-              <FileText className="h-6 w-6 text-[var(--color-primary-foreground)]" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold tracking-tight text-[var(--color-primary-foreground)]">
-                VAL Builder
-              </h1>
-              <p className="text-[var(--color-secondary)] text-sm">
-                Manage your valuation letters
-              </p>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="bg-gradient-to-br from-[var(--color-secondary)] via-[var(--color-muted)] to-[var(--color-secondary)]" style={{ minHeight: 'calc(100vh - 55px)'}}>
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-6 py-8 space-y-6">
         {/* Company & Plan Selection */}
@@ -86,7 +67,7 @@ export const LandingPage = () => {
             <SelectTrigger id="company-select" className="w-full max-w-md">
               <SelectValue placeholder="All Companies" />
             </SelectTrigger>
-            <SelectContent className="z-50">
+            <SelectContent className="z-100">
               <SelectItem value="all">All Companies</SelectItem>
               {companies?.map((company) => (
                 <SelectItem key={company.companyId} value={company.companyId.toString()}>

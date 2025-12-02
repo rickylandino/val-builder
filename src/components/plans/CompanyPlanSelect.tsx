@@ -15,7 +15,7 @@ export function CompanyPlanSelect({ companyId, value, onChange }: Readonly<{
       <SelectTrigger className="w-full max-w-md" data-testid="select-trigger">
         <SelectValue placeholder={isLoading ? 'Loading plans...' : 'Select a plan'} />
       </SelectTrigger>
-      <SelectContent className="z-50">
+      <SelectContent className="z-100">
         {plans.length === 0 && <SelectItem value="none" disabled>No plans found</SelectItem>}
         {plans.map((plan: CompanyPlan) => (
           <SelectItem key={plan.planId} value={plan.planId.toString()}>

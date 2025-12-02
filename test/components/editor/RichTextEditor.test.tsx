@@ -125,7 +125,7 @@ describe('RichTextEditor', () => {
             expect(screen.getByText('Content 1')).toBeInTheDocument();
         });
 
-        // Find all paragraphs
+        // Find all paragraphs (paragraph = val detail in this case)
         const paragraphs = screen.getAllByText(/Content/);
 
         expect(paragraphs).toHaveLength(5);
@@ -368,7 +368,6 @@ describe('RichTextEditor', () => {
 
         unmount();
 
-        // Render with new content
         const newDetails: ValDetail[] = [
             {
                 valDetailsId: 'new-1',
@@ -411,7 +410,6 @@ describe('RichTextEditor', () => {
 
         const editorSection = screen.getByLabelText('Editor content');
         
-        // Create a proper DragEvent-like object
         const dragEvent = new Event('dragover', { bubbles: true, cancelable: true });
         Object.defineProperty(dragEvent, 'dataTransfer', {
             value: { dropEffect: '' },

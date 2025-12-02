@@ -18,7 +18,6 @@ type ViewMode = 'edit' | 'preview-sections' | 'preview-final';
 interface SectionContentProps {
     cards: CardData[];
     mode: ViewMode;
-    onCardDragStart: (id: string, content: string) => void;
     onEditorContentChange: (content: string) => void;
     onUpdateValDetail?: (updatedDetail: ValDetail) => void;
     readOnly?: boolean;
@@ -28,7 +27,6 @@ interface SectionContentProps {
 export const SectionContent: React.FC<SectionContentProps> = ({
     cards,
     mode,
-    onCardDragStart,
     onEditorContentChange,
     onUpdateValDetail,
     readOnly = false
@@ -108,7 +106,7 @@ export const SectionContent: React.FC<SectionContentProps> = ({
         <>
             <div className="flex w-full h-full min-h-[500px] bg-section-bg rounded-lg overflow-hidden">
                 <div className="flex flex-col w-1/4 min-w-[220px] max-w-[400px] bg-white border-r border-gray-200 p-4">
-                    <CardLibrary cards={cards} onCardDragStart={onCardDragStart} />
+                    <CardLibrary cards={cards} />
                 </div>
 
                 <div className="flex flex-col flex-1 bg-white p-4">

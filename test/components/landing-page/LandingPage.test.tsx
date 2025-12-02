@@ -71,7 +71,6 @@ describe('LandingPage', () => {
       error: null,
     });
     render(<LandingPage />);
-    expect(screen.getByText(/VAL Builder/)).toBeInTheDocument();
     expect(screen.getByLabelText(/Filter by Company/i)).toBeInTheDocument();
     expect(screen.getByTestId('create-company')).toBeInTheDocument();
     expect(screen.getByTestId('plan-select')).toBeInTheDocument();

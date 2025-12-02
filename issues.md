@@ -1,2 +1,1 @@
-- fix when builder section has no content - should render blank editor
-- remove chevrons when rendering
+- When editor is blank, can't manually add a detail just by typing in the editor

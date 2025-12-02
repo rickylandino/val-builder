@@ -43,8 +43,6 @@ describe('ChevronPlaceholder Extension', () => {
         expect(decs.length).toBe(3);
     });
 
-    // Now empty placeholders are decorated, so this test is not needed
-
     it('selects content on click inside first placeholder', () => {
         const plugin = getPlugin(editor);
         const pos = editor.state.doc.textContent.indexOf('<<one>>') + 2;
