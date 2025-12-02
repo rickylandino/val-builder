@@ -56,12 +56,10 @@ const renderWithProvider = (ui: React.ReactElement, valDetails?: ValDetail[]) =>
 };
 
 describe('SectionContent', () => {
-    let onCardDragStart: any;
     let onEditorContentChange: any;
     let onUpdateValDetail: any;
 
     beforeEach(() => {
-        onCardDragStart = vi.fn();
         onEditorContentChange = vi.fn();
         onUpdateValDetail = vi.fn();
     });

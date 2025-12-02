@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useMemo } from 'react';
 import type { ValDetail } from '@/types/api/ValDetail';
 import { aggregateAllChanges, type ValDetailChange } from '@/lib/valChangesTracker';
+import { v4 as uuidV4 } from 'uuid';
 
 function stripParentPTag(html: string): string {
     return html.replace(/^<p[^>]*>(.*?)<\/p>$/is, '$1');
@@ -37,7 +38,7 @@ export function generateHtmlContent(details: ValDetail[]) {
         }).join('');
 }
 
-export function parseEditorContentToDetails(htmlContent: string, existingDetails: ValDetail[], valId: number): ValDetail[] {
+export function parseEditorContentToDetails(htmlContent: string, existingDetails: ValDetail[], valId: number, currentGroupId: number = 0): ValDetail[] {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlContent, 'text/html');
     const paragraphs = Array.from(doc.body.children);
@@ -45,8 +46,8 @@ export function parseEditorContentToDetails(htmlContent: string, existingDetails
     paragraphs.forEach((elem, index) => {
         if (elem.nodeType !== Node.ELEMENT_NODE) return;
         const el = elem as HTMLElement;
-        const valDetailsId = el.dataset.valDetailsId;
-        if (!valDetailsId) return;
+        let valDetailsId = el.dataset.valDetailsId;
+        if (!valDetailsId) valDetailsId = uuidV4();
         const htmlParagraph = el.outerHTML;
 
         // Extract formatting classes from the paragraph HTML
@@ -79,7 +80,7 @@ export function parseEditorContentToDetails(htmlContent: string, existingDetails
 
         const existingDetail = existingDetails.find(d => d.valDetailsId === valDetailsId);
 
-        const groupId = existingDetails[0]?.groupId || 0;
+        const groupId = existingDetails[0]?.groupId || currentGroupId;
 
         if (existingDetail) {
             updatedDetails.push({
@@ -122,6 +123,7 @@ type ValBuilderContextType = {
     getAllChanges: () => ValDetailChange[];
     hasChanges: () => boolean;
     resetChanges: () => void;
+    updateOriginalDetailsAfterSave: () => void;
     convertEditorContentToDetails: (html: string) => ValDetail[];
     syncEditorToContext: (htmlContent: string) => void;
 };
@@ -196,8 +198,8 @@ export const ValBuilderProvider = ({
     }, [currentGroupId, allValDetails]); // Trigger on section change or data load
 
     const convertEditorContentToDetails = useCallback((html: string): ValDetail[] => {
-        return parseEditorContentToDetails(html, currentDetails, valId);
-    }, [currentDetails, editorContent, valId]);
+        return parseEditorContentToDetails(html, currentDetails, valId, currentGroupId);
+    }, [currentDetails, editorContent, valId, currentGroupId]);
 
     const updateEditorContent = useCallback((content: string) => {
         if (!currentGroupId) return;
@@ -293,6 +295,25 @@ export const ValBuilderProvider = ({
         }
     }, [changesState, currentGroupId, allValDetails]);
 
+    const updateOriginalDetailsAfterSave = useCallback(() => {
+        // Update originalDetails in all sections to match their current details
+        // This is called after a successful save to reset the baseline
+        const currentSection = changesState[currentGroupId];
+        
+        if (currentSection) {
+            // Set currentDetails to the saved details
+            const savedDetails = [...currentSection.details];
+            setCurrentDetails(savedDetails);
+            
+            // Set editorContent to the saved content
+            const savedContent = currentSection.editorContent;
+            setEditorContent(savedContent);
+        }
+        
+        // Clear all changes state
+        setChangesState({});
+    }, [changesState, currentGroupId]);
+
     const value = useMemo(() => ({
         currentGroupId,
         setCurrentGroupId,
@@ -308,9 +329,10 @@ export const ValBuilderProvider = ({
         getAllChanges,
         hasChanges,
         resetChanges,
+        updateOriginalDetailsAfterSave,
         convertEditorContentToDetails,
         syncEditorToContext
-    }), [currentGroupId, editorContent, currentDetails, updateEditorContent, updateSectionDetails, updateSingleValDetail, getAllChanges, hasChanges, resetChanges, convertEditorContentToDetails, syncEditorToContext]);
+    }), [currentGroupId, editorContent, currentDetails, updateEditorContent, updateSectionDetails, updateSingleValDetail, getAllChanges, hasChanges, resetChanges, updateOriginalDetailsAfterSave, convertEditorContentToDetails, syncEditorToContext]);
 
     return (
         <ValBuilderContext.Provider value={value}>

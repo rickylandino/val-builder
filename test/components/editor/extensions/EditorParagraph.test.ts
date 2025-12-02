@@ -37,12 +37,12 @@ describe('EditorParagraph Extension', () => {
 		expect(html).not.toContain('class=');
 	});
 
-	it('handles missing valDetailsId gracefully', () => {
+	it('generates data-val-details-id if missing', () => {
 		editor.commands.setContent('<p>Test</p>');
 		const node = editor.state.doc.firstChild;
-		expect(node?.attrs.valDetailsId).toBe('');
+		expect(typeof node?.attrs.valDetailsId).toBe('string');
 		const html = editor.getHTML();
-		expect(html).not.toContain('data-val-details-id');
+		expect(html).toContain('data-val-details-id');
 	});
 
 	it('renders multiple attributes together', () => {

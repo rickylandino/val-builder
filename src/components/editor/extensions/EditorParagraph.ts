@@ -1,5 +1,6 @@
 import { mergeAttributes } from '@tiptap/core';
 import Paragraph from '@tiptap/extension-paragraph';
+import { v4 as uuidv4 } from 'uuid';
 
 export const EditorParagraph = Paragraph.extend({
     addAttributes() {
@@ -48,7 +49,13 @@ export const EditorParagraph = Paragraph.extend({
         ];
     },
     renderHTML({ HTMLAttributes }) {
-        // Merge all attributes, including custom class
+        // Always ensure data-val-details-id is present and non-empty
+        if (!HTMLAttributes['data-val-details-id'] && !HTMLAttributes.valDetailsId) {
+            HTMLAttributes['data-val-details-id'] = uuidv4();
+            HTMLAttributes.valDetailsId = HTMLAttributes['data-val-details-id'];
+        } else if (HTMLAttributes.valDetailsId) {
+            HTMLAttributes['data-val-details-id'] = HTMLAttributes.valDetailsId;
+        }
         return ['p', mergeAttributes(HTMLAttributes), 0];
     },
 });

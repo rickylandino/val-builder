@@ -1,4 +1,4 @@
-import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { ManageValItems } from '@/components/management-panel/ManageValItems';
 import * as useValSectionsHook from '@/hooks/api/useValSections';
 import * as useValTemplateItemsHook from '@/hooks/api/useValTemplateItems';
@@ -7,9 +7,15 @@ import { valTemplateItemsService } from '@/services/api/valTemplateItemsService'
 
 describe('ManageValItems', () => {
     globalThis.ResizeObserver = class {
-        observe() {}
-        unobserve() {}
-        disconnect() {}
+        observe() {
+            // intentionally left blank for test environment
+        }
+        unobserve() {
+            // intentionally left blank for test environment
+        }
+        disconnect() {
+            // intentionally left blank for test environment
+        }
     };
 
   beforeEach(() => {

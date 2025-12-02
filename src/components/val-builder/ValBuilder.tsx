@@ -25,7 +25,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
         updateEditorContent,
         getAllChanges,
         hasChanges,
-        resetChanges,
+        updateOriginalDetailsAfterSave,
         updateSingleValDetail,
         syncEditorToContext,
         convertEditorContentToDetails,
@@ -145,7 +145,7 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
             await saveChanges.mutateAsync({ valId: valHeader.valId, changes });
             toast.success('Changes saved successfully');
-            resetChanges();
+            updateOriginalDetailsAfterSave();
         } catch (err) {
             console.error('Failed to save changes:', err);
         }
