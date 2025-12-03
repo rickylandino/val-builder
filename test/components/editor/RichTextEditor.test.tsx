@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RichTextEditor } from '@/components/editor/RichTextEditor';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
-import type { CompanyPlan, ValDetail, ValHeader } from '@/types/api';
+import type { ValDetail } from '@/types/api';
 import { initialAllDetails } from './editor-test-data';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { valHeader } from '../val-builder/test-data';

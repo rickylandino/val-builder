@@ -27,7 +27,7 @@ export const highlightChevrons = (html: string, addBracketHighlight = false) => 
 
 export function highlightBrackets(text: string): string {
   // This regex matches [[...]] and captures the content inside
-  return text.replaceAll(/\[\[(.+?)\]\]/g, '<span class="highlight-bracket">[[$1]]</span>');
+  return text.replaceAll(/\[\[(.+?)\]\]/g, '<span class="highlight-bracket">[[$1]]</span>'); //NOSONAR
 }
 
 export const formatDate = (dateStr: string) => {

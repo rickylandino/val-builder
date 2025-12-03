@@ -63,8 +63,6 @@ describe('BracketPlaceholder Extension', () => {
   // Simulate click handling for bracket placeholders
   it('returns false when clicking outside any bracket placeholder', () => {
     const plugin = getPlugin(editor);
-    // Simulate a position outside any [[...]] tag
-    const pos = editor.state.doc.textContent.indexOf('Here');
     // There is no handleClick in BracketPlaceholder, so this is a placeholder for future extension
     expect(typeof plugin?.props.handleClick).toBe('undefined');
   });
