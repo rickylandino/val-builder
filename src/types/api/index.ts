@@ -11,3 +11,5 @@ export * from './ValAnnotation';
 export * from './ValTask';
 export * from './ValPdfAttachment';
 export * from './ApiResponse';
+export * from './BracketMapping';
+export * from './BracketMappingFields';

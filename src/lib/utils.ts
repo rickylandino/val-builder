@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs))
 }
 
-export const highlightChevrons = (html: string) => {
+export const highlightChevrons = (html: string, addBracketHighlight = false) => {
     if (!html) return '';
     // Remove any existing chevron-placeholder spans
     let cleanHtml = html.replaceAll(/<span class="chevron-placeholder"[^>]*>(.*?)<\/span>/g, '$1');
@@ -17,8 +17,18 @@ export const highlightChevrons = (html: string) => {
         .replaceAll(/(<<)\s*([\s\S]*?)\s*(>>)/g, (_, open, content, close) => { //NOSONAR
             return `<span class="chevron-placeholder font-bold text-primary-foreground bg-primary px-1 rounded" data-chevron-placeholder="true">${open} ${content} ${close}</span>`;
         });
+
+    if (addBracketHighlight) {
+        cleanHtml = highlightBrackets(cleanHtml);
+    }
+    
     return cleanHtml;
 };
+
+export function highlightBrackets(text: string): string {
+  // This regex matches [[...]] and captures the content inside
+  return text.replaceAll(/\[\[(.+?)\]\]/g, '<span class="highlight-bracket">[[$1]]</span>');
+}
 
 export const formatDate = (dateStr: string) => {
     if (!dateStr) return "";

@@ -4,6 +4,10 @@ import type { CompanyPlan } from '@/types/api';
 const api = '/api/companyplan';
 
 export const companyPlansService = {
+  async get(planId: number): Promise<CompanyPlan> {
+    const { data } = await apiClient.get(`${api}/${planId}`);
+    return data;
+  },
   async getByCompany(companyId: number): Promise<CompanyPlan[]> {
     const { data } = await apiClient.get(`${api}?companyId=${companyId}`);
     return data;

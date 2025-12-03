@@ -148,7 +148,6 @@ span[data-chevron-placeholder] {
   user-select: none;
 }
 
-
 .tiptap-editor .chevron-placeholder:hover,
 .tiptap-editor span[data-chevron-placeholder]:hover {
   cursor: pointer;
@@ -182,9 +181,19 @@ span[data-chevron-placeholder] {
 }
 
 /* Make chevron characters visually distinct */
-.chevron-placeholder {
+.chevron-placeholder, .highlight-bracket {
   font-weight: 500;
   color: #e65100;
+}
+
+
+.highlight-bracket,
+span[data-highlight-bracket] {
+  background-color: #ffdbb7;
+  border-radius: 3px;
+  padding: 2px 4px;
+  margin: 0 2px;
+  font-family: 'Courier New', monospace;
 }
 
 .indent-level-1 {

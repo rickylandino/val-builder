@@ -16,7 +16,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogFooter,
-  DialogTitle
+  DialogTitle,
+  DialogDescription
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -154,6 +155,7 @@ export const ManageValItems: React.FC<ManageValItemsProps> = ({ groupId = 1 }) =
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Edit VAL Item</DialogTitle>
+              <DialogDescription>Modify the details of the selected VAL item below.</DialogDescription>
             </DialogHeader>
             <form
               className="space-y-4"

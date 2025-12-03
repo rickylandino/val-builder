@@ -35,6 +35,13 @@ describe('companyPlansService', () => {
 		expect(result).toEqual(mockPlans);
 	});
 
+    it('get calls apiClient.get and returns data', async () => {
+        (apiClient.get as any).mockResolvedValueOnce({ data: mockPlans[0] });
+        const result = await companyPlansService.get(1);
+        expect(apiClient.get).toHaveBeenCalledWith('/api/companyplan/1');
+        expect(result).toEqual(mockPlans[0]);
+    });
+
 	it('create calls apiClient.post and returns data', async () => {
         const payload2 = {
             "planId": 1,
@@ -54,6 +61,11 @@ describe('companyPlansService', () => {
 		(apiClient.get as any).mockRejectedValueOnce(new Error('Network error'));
 		await expect(companyPlansService.getByCompany(42)).rejects.toThrow('Network error');
 	});
+
+    it('get propagates errors from apiClient', async () => {
+        (apiClient.get as any).mockRejectedValueOnce(new Error('Get failed'));
+        await expect(companyPlansService.get(1)).rejects.toThrow('Get failed');
+    });
 
 	it('create propagates errors from apiClient', async () => {
 		(apiClient.post as any).mockRejectedValueOnce(new Error('Create failed'));

@@ -40,7 +40,7 @@ export const ValDetailRenderer = ({ detail, index }: ValDetailRendererProps) => 
       }}
     >
       <div 
-        dangerouslySetInnerHTML={{ __html: highlightChevrons(detail.groupContent || '') }}
+        dangerouslySetInnerHTML={{ __html: highlightChevrons(detail.groupContent || '', true) }}
       />
     </div>
   );

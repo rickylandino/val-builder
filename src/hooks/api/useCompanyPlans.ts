@@ -1,6 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { companyPlansService } from '@/services/api/companyPlansService';
 
+export function useCompanyPlan(planId: number | null) {
+  return useQuery({
+    queryKey: ['companyPlan', planId],
+    queryFn: () => planId ? companyPlansService.get(planId) : null,
+    enabled: !!planId,
+  });
+}
+
 export function useCompanyPlans(companyId: number | null) {
   return useQuery({
     queryKey: ['companyPlans', companyId],

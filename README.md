@@ -1,51 +1,57 @@
-# RLL
 
-## What is needed to maintain documentation
-- Ensure components follow components.build practices
-- Ensure structural changes get updated in documentation
-- All unit tests are updated
+# VAL Builder
 
-## Project Structure
+## Documentation & Maintenance
+- All components follow [components.build](https://www.components.build/) guidelines for composition, accessibility, and maintainability.
+- Dialogs use visible descriptions (`DialogDescription`) for accessibility compliance.
+- All structural changes and new features are reflected in this documentation.
+- Unit tests are kept up to date for all features and context methods.
 
-### Tech Stack
-- **React** + **TypeScript** + **Vite** - Core framework and build tool
-- **Tailwind CSS v4** - Utility-first styling with custom theme variables
-- **ShadCN UI** - Component library with Button, Input, and Select components
-- **TipTap** - Rich text editor with drag-handle and comment extensions
-- **Vitest** + **React Testing Library** - Unit testing and component testing
 
-### Components
-- **ValBuilder** - Main application container managing sections and state
-- **Header** - Application header with client info, VAL description, and plan year dates
-- **SectionNavigation** - Section selector with prev/next navigation
-- **SectionContent** - Main content area with card library, editor, and comment sidebar
-- **CardLibrary** - Draggable card library for content templates
-- **DraggableCard** - Individual draggable content cards
-- **RichTextEditor** - TipTap-based rich text editor with toolbar and comment support
-- **CommentSidebar** - Comment thread management sidebar
-- **UI Components** (ShadCN):
-  - `Button` - Default and inverse variants with icon/sm sizes
-  - `Input` - Form input component
-  - `Select` - Dropdown select component
+## Tech Stack & Tooling
+- **React** + **TypeScript** + **Vite**: Core framework and build tool
+- **Tailwind CSS v4**: Utility-first styling with custom theme variables
+- **ShadCN UI**: Accessible, composable UI primitives (Button, Input, Select, Dialog, etc.)
+- **TipTap**: Rich text editor with custom extensions (drag-handle, cusstom icons, etc)
+- **Vitest** + **React Testing Library**: Unit and integration testing
+- **Node.js v18+**: Required runtime for Vite, Vitest, and modern JS features
+- **SonarQube Integration**: Static code analysis for maintainability, reliability, and security
+  - SonarQube config in `sonar-project.properties`
+  - IDE integration for live code quality feedback
+  - Run analysis with SonarQube CLI or IDE plugin
 
-### Styling & Theme
-- Custom theme variables in `src/index.css` using Tailwind v4 `@theme` directive
-- Color scheme: Green primary (`#16a34a`), with muted backgrounds and borders
-- All components converted to Tailwind utility classes (no custom CSS files)
+## Quality & Tooling
+- **SonarQube**: Integrated for static code analysis, security hotspots, and maintainability checks
+  - Main branch commits are analyzed for code quality
+  - IDE plugin provides live feedback and highlights issues in VS Code
+- **Node.js v18+**: Project requires Node v18 or newer for full compatibility with Vite, Vitest, and modern ECMAScript features
+- **ESLint**: Custom config for React, TypeScript, and accessibility linting
+- **Prettier**: Enforced code formatting for consistency
+
+## Accessibility & Components.build Compliance
+- All dialogs include visible descriptions for screen readers
+- All form fields have associated labels
+- ARIA attributes and keyboard navigation are implemented where required
+- Table and list components use semantic markup
+
+## Styling & Theme
+- Tailwind v4 with custom theme variables in `src/index.css`
+- Customizable primary (currently green: `#16a34a`), muted backgrounds, and border colors
+- All components use Tailwind utility classes (no custom CSS files)
 - Consistent spacing, rounded corners, and shadow styles
 
-### Testing
-- Vitest configuration with jsdom environment
+## Testing
+- Vitest with jsdom environment
 - Test scripts: `npm test`, `npm run test:ui`, `npm run test:coverage`
 
-### Key Features
+## Features
 - Drag-and-drop content cards into rich text editor
-- Section-based content management with navigation
-- Comment threading on editor content
-- Accessible components with ARIA labels and keyboard navigation
-- Customizable components via className props
+- Section-based content management and navigation
+- Threaded comments on editor content
+- Accessible dialogs and forms
+- Customizable UI via props and theme
 
-### Installation
+## Installation
 ```sh
 npm install @tiptap/react @tiptap/pm @tiptap/starter-kit
 npm install @tiptap/extension-drag-handle @tiptap/extension-drag-handle-react
@@ -53,32 +59,32 @@ npm install tailwindcss@next @tailwindcss/postcss
 npm install -D vitest @testing-library/react @testing-library/jest-dom @testing-library/user-event jsdom @vitest/ui
 ```
 
-### Directory Structure
+## Directory Structure
 ```
 val-builder/
 ├── public/
 ├── src/
 │   ├── assets/
-│   ├── components/          # Feature-based component organization
-│   │   ├── cards/           # Card-related components
-│   │   ├── comments/        # Comment sidebar and threading
-│   │   ├── editor/          # Rich text editor and toolbar
-│   │   │   └── extensions/  # TipTap custom extensions
-│   │   ├── header/          # Application header
-│   │   ├── sections/        # Section navigation and content
-│   │   ├── ui/              # ShadCN UI components
-│   │   └── ValBuilder.tsx   # Main app container
-│   ├── config/              # Configuration files
-│   ├── lib/                 # Utility functions
-│   │   └── utils.ts
-│   ├── test/                # Test files and setup
-│   │   ├── components/      # Component tests
-│   │   └── setup.ts
-│   ├── types/               # TypeScript type definitions
+│   ├── components/
+│   │   ├── cards/
+│   │   ├── comments/
+│   │   ├── editor/
+│   │   │   └── extensions/
+│   │   ├── header/
+│   │   ├── sections/
+│   │   ├── ui/
+│   │   ├── val-builder/
+│   │   ├── val-attachments/
+│   │   ├── vals/
+│   │   └── ...
+│   ├── config/
+│   ├── lib/
+│   ├── test/
+│   ├── types/
 │   ├── App.tsx
 │   ├── App.css
 │   ├── main.tsx
-│   └── index.css            # Global styles and Tailwind theme
+│   └── index.css
 ├── eslint.config.js
 ├── index.html
 ├── package.json
@@ -90,18 +96,12 @@ val-builder/
 └── README.md
 ```
 
-# End RLL
-
-
 ____________________________
 
 # React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules. It uses swc for compilation and bundling rather than something like Babel.
 
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
 - [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
 ## React Compiler

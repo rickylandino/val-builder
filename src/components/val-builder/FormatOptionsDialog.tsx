@@ -4,6 +4,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -65,14 +66,13 @@ export const FormatOptionsDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" aria-describedby="format-options-desc">
-        <div id="format-options-desc" style={{ display: 'none' }}>
-            Edit formatting options for the value.
-        </div>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle>Format Options</DialogTitle>
+          <DialogDescription>
+            Edit formatting options for the value.
+          </DialogDescription>
         </DialogHeader>
-        
         <div className="grid gap-6 py-4">
           {/* First Row: Bold, Bullet, Center */}
           <div className="grid grid-cols-3 gap-4">

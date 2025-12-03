@@ -2,8 +2,21 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { RichTextEditor } from '@/components/editor/RichTextEditor';
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
-import type { ValDetail } from '@/types/api';
+import type { CompanyPlan, ValDetail, ValHeader } from '@/types/api';
 import { initialAllDetails } from './editor-test-data';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { valHeader } from '../val-builder/test-data';
+import { mockPlan } from '../plans/test-data';
+
+const queryClient = new QueryClient();
+
+const renderWithQueryClient = (ui: React.ReactElement) => render(
+    <QueryClientProvider client={queryClient}>
+        {ui}
+    </QueryClientProvider>
+);
+
+const valHeaderMock = valHeader;
 
 describe('RichTextEditor', () => {
     let onChange: (content: string) => void;
@@ -20,7 +33,8 @@ describe('RichTextEditor', () => {
         allValDetails: ValDetail[];
         currentGroupId: number;
         valId: number;
-    }>) => render(
+    }>) => renderWithQueryClient(
+        
         <ValBuilderProvider 
             initialAllValDetails={initialData?.allValDetails}
             initialCurrentGroupId={initialData?.currentGroupId}
@@ -36,6 +50,9 @@ describe('RichTextEditor', () => {
                 onChange={onChange}
                 onFormat={onFormat}
                 onDelete={onDelete}
+                valHeader={valHeaderMock}
+                companyPlan={mockPlan}
+
             />
         );
         expect(screen.getByLabelText('Editor content')).toBeInTheDocument();
@@ -44,14 +61,14 @@ describe('RichTextEditor', () => {
 
     it('renders placeholder when empty', () => {
         renderWithProvider(
-            <RichTextEditor onChange={onChange} placeholder="Type here..." />
+            <RichTextEditor onChange={onChange} placeholder="Type here..." valHeader={valHeaderMock} companyPlan={mockPlan} />
         );
         expect(screen.getByPlaceholderText('Type here...')).toBeInTheDocument();
     });
 
     it('handles pointer down on drag handle', () => {
         renderWithProvider(
-            <RichTextEditor  onChange={onChange} />
+            <RichTextEditor  onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />
         );
         const dragHandle = screen.getByTitle('Drag to reorder');
         fireEvent.pointerDown(dragHandle);
@@ -59,7 +76,7 @@ describe('RichTextEditor', () => {
     });
 
     it('handles Enter key to insert paragraph', () => {
-        renderWithProvider(<RichTextEditor onChange={() => {}} />);
+        renderWithProvider(<RichTextEditor onChange={() => {}} valHeader={valHeaderMock} companyPlan={mockPlan} />);
         const editorContent = screen.getByLabelText('Editor content').querySelector('.tiptap-editor');
         if (editorContent) {
             const event = new KeyboardEvent('keydown', { key: 'Enter', shiftKey: false });
@@ -86,7 +103,7 @@ describe('RichTextEditor', () => {
         ];
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: testDetails,
                 currentGroupId: 1,
@@ -113,6 +130,8 @@ describe('RichTextEditor', () => {
                 onChange={onChange}
                 onFormat={onFormat}
                 onDelete={onDelete}
+                valHeader={valHeaderMock}
+                companyPlan={mockPlan}
             />,
             {
                 allValDetails: initialAllDetails,
@@ -208,7 +227,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -263,7 +282,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -312,7 +331,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -354,7 +373,7 @@ describe('RichTextEditor', () => {
 
     it('should update editor content when context editorContent changes', async () => {
         const { unmount } = renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -385,7 +404,7 @@ describe('RichTextEditor', () => {
         ];
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: newDetails,
                 currentGroupId: 1,
@@ -400,7 +419,7 @@ describe('RichTextEditor', () => {
 
     it('should handle dragover event', () => {
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -427,7 +446,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -466,7 +485,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -508,7 +527,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -587,7 +606,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -663,7 +682,7 @@ describe('RichTextEditor', () => {
         }
 
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,
@@ -706,7 +725,7 @@ describe('RichTextEditor', () => {
 
     it('should toggle debug panel', () => {
         renderWithProvider(
-            <RichTextEditor onChange={onChange} />,
+            <RichTextEditor onChange={onChange} valHeader={valHeaderMock} companyPlan={mockPlan} />,
             {
                 allValDetails: initialAllDetails,
                 currentGroupId: 1,

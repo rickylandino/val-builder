@@ -39,7 +39,7 @@ export const DraggableCard: React.FC<DraggableCardProps> = ({
     >
       <div
         className="text-foreground leading-relaxed text-sm"
-        dangerouslySetInnerHTML={{ __html: highlightChevrons(content) }}
+        dangerouslySetInnerHTML={{ __html: highlightChevrons(content, true) }}
       />
     </button>
   );

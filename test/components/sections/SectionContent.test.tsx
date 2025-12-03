@@ -4,6 +4,8 @@ import { SectionContent, type CardData } from '@/components/sections/SectionCont
 import { ValBuilderProvider } from '@/contexts/ValBuilderContext';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ValDetail } from '@/types/api';
+import { valHeader } from '../val-builder/test-data';
+import { mockPlan } from '../plans/test-data';
 
 const cards = [
     { id: '1', content: 'Card 1', type: 'text' },
@@ -71,6 +73,9 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
+                
             />
         );
         expect(screen.getByText('Card 1')).toBeInTheDocument();
@@ -90,6 +95,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -120,6 +127,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -149,6 +158,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -170,6 +181,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -204,6 +217,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -227,6 +242,8 @@ describe('SectionContent', () => {
                 cards={cards}
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -245,6 +262,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             []
         );
@@ -262,6 +281,8 @@ describe('SectionContent', () => {
                 mode="preview-sections"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -276,6 +297,8 @@ describe('SectionContent', () => {
                 mode="preview-final"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -290,6 +313,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
                 readOnly={true}
             />,
             mockValDetails
@@ -309,6 +334,8 @@ describe('SectionContent', () => {
                 mode="edit"
                 onEditorContentChange={onEditorContentChange}
                 onUpdateValDetail={onUpdateValDetail}
+                valHeader={valHeader}
+                companyPlan={mockPlan}
             />,
             mockValDetails
         );
@@ -365,6 +392,8 @@ describe('SectionContent', () => {
                         mode="edit"
                         onEditorContentChange={onEditorContentChange}
                         onUpdateValDetail={onUpdateValDetail}
+                        valHeader={valHeader}
+                        companyPlan={mockPlan}
                     />
                 </ValBuilderProvider>
             </QueryClientProvider>

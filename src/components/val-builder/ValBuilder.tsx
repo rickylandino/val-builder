@@ -8,9 +8,10 @@ import { useValSections } from '@/hooks/api/useValSections';
 import { useValTemplateItemsByGroupId } from '@/hooks/api/useValTemplateItems';
 import { useAllValDetails, useSaveValChanges } from '@/hooks/api/useValDetails';
 import { valPdfService } from '@/services/api/valPdfService';
-import type { ValHeader, ValDetail } from '@/types/api';
+import type { ValHeader, ValDetail, CompanyPlan } from '@/types/api';
 import { useValBuilder } from '@/contexts/ValBuilderContext';
 import { toast } from 'sonner';
+import { useCompanyPlan } from '@/hooks/api/useCompanyPlans';
 
 type ViewMode = 'edit' | 'preview-sections' | 'preview-final';
 
@@ -37,6 +38,8 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
 
     // Fetch ALL ValDetails upfront (not per section) - cached for smooth transitions
     const { data: fetchedAllValDetails, isLoading: allDetailsLoading } = useAllValDetails(valHeader.valId ?? 0);
+    const { data: companyPlan } = useCompanyPlan(valHeader.planId ?? null) as { data: CompanyPlan };
+    console.log(companyPlan);
 
     useEffect(() => {
         if(valHeader) {
@@ -213,6 +216,8 @@ export const ValBuilder = ({ valHeader, onCloseDrawer }: Readonly<{ valHeader: V
                     mode={mode}
                     onEditorContentChange={handleEditorChange}
                     onUpdateValDetail={handleUpdateValDetail}
+                    valHeader={valHeader}
+                    companyPlan={companyPlan}
                 />
             )}
 

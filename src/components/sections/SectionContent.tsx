@@ -1,7 +1,7 @@
 import { RichTextEditor } from '../editor/RichTextEditor';
 import { CardLibrary } from '../cards/CardLibrary';
 import { useState, useEffect } from 'react';
-import type { ValDetail } from '@/types/api';
+import type { CompanyPlan, ValDetail, ValHeader } from '@/types/api';
 import { FormatOptionsDialog } from '../val-builder/FormatOptionsDialog';
 import { useValBuilder } from '@/contexts/ValBuilderContext';
 import { CommentSidebar } from '../comments/CommentSidebar';
@@ -22,6 +22,8 @@ interface SectionContentProps {
     onUpdateValDetail?: (updatedDetail: ValDetail) => void;
     readOnly?: boolean;
     valId?: number;
+    valHeader: ValHeader;
+    companyPlan: CompanyPlan;
 }
 
 export const SectionContent: React.FC<SectionContentProps> = ({
@@ -29,7 +31,9 @@ export const SectionContent: React.FC<SectionContentProps> = ({
     mode,
     onEditorContentChange,
     onUpdateValDetail,
-    readOnly = false
+    readOnly = false,
+    valHeader,
+    companyPlan
 }) => {
     const {
         currentDetails,
@@ -122,6 +126,8 @@ export const SectionContent: React.FC<SectionContentProps> = ({
                             onFormat={handleFormatIconClick}
                             // @ts-ignore: Accepts (node, pos, state) from FormatHandle extension
                             onDelete={handleDeleteIconClick}
+                            valHeader={valHeader}
+                            companyPlan={companyPlan}
                         />
                     </div>
                 </div>

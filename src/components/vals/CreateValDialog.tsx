@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { MonthDayCalendar } from '@/components/ui/MonthDayCalendar';
 import { useCreateValHeader } from '@/hooks/api/useValHeaders';
 import { Plus } from 'lucide-react';
+import { DialogDescription } from '@radix-ui/react-dialog';
 
 export function CreateValDialog({ planId, onCreated }: Readonly<{ planId: number | null; onCreated?: () => void }>) {
     const [open, setOpen] = useState(false);
@@ -82,7 +83,8 @@ export function CreateValDialog({ planId, onCreated }: Readonly<{ planId: number
             </DialogTrigger>
             <DialogContent>
                 <DialogHeader>
-                    <DialogTitle>Create Valuation Letter</DialogTitle>
+                    <DialogTitle>Create a New VAL</DialogTitle>
+                    <DialogDescription>Create a new Valuation Letter by filling out the form below.</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit} className="space-y-4">
                     <div>

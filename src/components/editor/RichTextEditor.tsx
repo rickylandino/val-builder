@@ -8,8 +8,12 @@ import './RichTextEditor.css';
 import { EditorParagraph } from './extensions/EditorParagraph';
 import { CustomHandle } from './extensions/CustomHandle';
 import { TextSelection } from '@tiptap/pm/state';
-import { parseEditorContentToDetails, useValBuilder } from '@/contexts/ValBuilderContext';
-import type { ValDetail } from '@/types/api';
+import { useValBuilder } from '@/contexts/ValBuilderContext';
+import type { CompanyPlan, ValDetail, ValHeader } from '@/types/api';
+import { parseEditorContentToDetails } from '@/lib/valDetailsUtil';
+import { BracketPlaceholder } from './extensions/BracketPlaceholder';
+import { useBracketMappings } from '@/hooks/api/useBracketMappings';
+import { replaceBracketTags } from '@/lib/bracketReplacer';
 
 interface RichTextEditorProps {
     onChange: (content: string) => void;
@@ -17,6 +21,8 @@ interface RichTextEditorProps {
     readOnly?: boolean;
     onFormat?: (node: any) => void;
     onDelete?: (node: any) => void;
+    valHeader: ValHeader;
+    companyPlan: CompanyPlan;
 }
 
 interface ParagraphInfo {
@@ -44,8 +50,11 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
     placeholder = 'Start typing...',
     onDelete,
     onFormat,
+    valHeader,
+    companyPlan
 }) => {
     const { currentDetails, updateSectionDetails, valId, editorContent } = useValBuilder();
+    const { data: bracketMappings = [] } = useBracketMappings();
     const [debugOpen, setDebugOpen] = useState(false);
     const editorInstanceRef = useRef<any>(null);
 
@@ -54,6 +63,7 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
             StarterKit.configure({ paragraph: false }),
             EditorParagraph,
             ChevronPlaceholder,
+            BracketPlaceholder,
             CustomHandle.configure({
                 onDelete,
                 onFormat
@@ -174,11 +184,17 @@ export const RichTextEditor: React.FC<RichTextEditorProps> = ({
 
                     const html = event.dataTransfer?.getData('text/html');
                     const plainText = event.dataTransfer?.getData('text/plain');
-                    const contentToInsert = (html || plainText || '').trim();
+                    let contentToInsert = (html || plainText || '').trim();
 
                     if (!contentToInsert) {
                         return false;
                     }
+
+                    contentToInsert = replaceBracketTags(
+                        contentToInsert,
+                        { valHeader, companyPlan },
+                        bracketMappings
+                    );
 
                     editor.chain().focus().insertContentAt(pos.pos, `<p data-val-details-id="${uuidv4()}">${contentToInsert}</p>`).run();
                     return true;

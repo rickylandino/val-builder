@@ -3,7 +3,7 @@ import { renderHook, waitFor, act } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 import { companyPlansService } from '@/services/api/companyPlansService';
-import { useCompanyPlans, useCreateCompanyPlan } from '@/hooks/api/useCompanyPlans';
+import { useCompanyPlan, useCompanyPlans, useCreateCompanyPlan } from '@/hooks/api/useCompanyPlans';
 
 vi.mock('@/services/api/companyPlansService', () => ({
     companyPlansService: {
@@ -19,6 +19,27 @@ const mockPlans = [
 ];
 
 let queryClient: QueryClient;
+
+describe('useCompanyPlan', () => {
+    beforeEach(() => {
+        vi.clearAllMocks();
+        queryClient = new QueryClient();
+    });
+
+    it('returns company plan data', async () => {
+        companyPlansService.get = vi.fn().mockResolvedValueOnce(mockPlans[0]);
+        const { result } = renderHook(() => useCompanyPlan(1), {
+            wrapper: ({ children }) => (
+                <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+            ),
+        });
+
+        await waitFor(() => {
+            expect(result.current.status).toBe('success');
+            expect(result.current.data).toEqual(mockPlans[0]);
+        });
+    });
+});
 
 describe('useCompanyPlans', () => {
     
