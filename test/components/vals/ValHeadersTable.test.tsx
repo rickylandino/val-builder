@@ -70,13 +70,9 @@ describe('ValHeadersTable', () => {
 		vi.restoreAllMocks();
 	});
 	it('calls context methods on handleClose', async () => {
-		const resetChanges = vi.fn();
-		const setValId = vi.fn();
-		const setCurrentGroupId = vi.fn();
+		const resetContext = vi.fn();
 		(vi.spyOn(ValBuilderContext, 'useValBuilder') as any).mockReturnValue({
-			resetChanges,
-			setValId,
-			setCurrentGroupId,
+			resetContext
 			// Provide other context values as needed for rendering
 		});
 		const valHeaders = [makeValHeader({ valId: 123 })];
@@ -85,9 +81,7 @@ describe('ValHeadersTable', () => {
 		fireEvent.click(openBtn);
 		await waitFor(() => expect(screen.getByTestId('cancel-btn')).toBeInTheDocument());
 		fireEvent.click(screen.getByTestId('cancel-btn'));
-		expect(resetChanges).toHaveBeenCalled();
-		expect(setValId).toHaveBeenCalledWith(0);
-		expect(setCurrentGroupId).toHaveBeenCalledWith(1);
+		expect(resetContext).toHaveBeenCalled();
 		vi.restoreAllMocks();
 	});
 	it('renders empty state when no valHeaders', () => {
