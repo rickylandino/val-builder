@@ -56,12 +56,12 @@ export function CreateCompanyPlanDialog(
                         <Input id="plan-description" value={description} onChange={e => setDescription(e.target.value)} />
                     </div>
                     <div>
-                        <Label htmlFor="plan-year-end">Plan Year End (MM/YY)</Label>
+                        <Label htmlFor="plan-year-end">Plan Year End (MM/dd)</Label>
                         <Input
                             id="plan-year-end"
                             value={planYearEnd}
                             onChange={e => setPlanYearEnd(e.target.value)}
-                            placeholder="MM/DD"
+                            placeholder="MM/dd"
                             pattern="^(0[1-9]|1[0-2])/(\d{2})$"
                             title="Format: MM/dd"
                             required

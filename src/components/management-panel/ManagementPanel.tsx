@@ -28,7 +28,7 @@ export const ManagementPanel: React.FC = () => {
           </button>
           <button
             type="button"
-            className={`w-full flex items-center gap-2 px-4 py-3 font-semibold transition-colors duration-150 text-left cursor-pointer select-none
+            className={`w-full flex items-center gap-2 px-4 py-3 font-semibold transition-colors duration-150 text-left cursor-pointer select-none hidden
               ${activeNav === 'bracketMappings'
                 ? 'border-l-4 border-primary bg-primary/10 text-primary'
                 : 'border-l-4 border-transparent text-gray-700 hover:bg-gray-100'}

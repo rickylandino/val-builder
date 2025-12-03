@@ -21,6 +21,7 @@ type ValBuilderContextType = {
     updateOriginalDetailsAfterSave: () => void;
     convertEditorContentToDetails: (html: string) => ValDetail[];
     syncEditorToContext: (htmlContent: string) => void;
+    resetContext: () => void;
 };
 
 const ValBuilderContext = createContext<ValBuilderContextType | undefined>(undefined);
@@ -209,6 +210,16 @@ export const ValBuilderProvider = ({
         setChangesState({});
     }, [changesState, currentGroupId]);
 
+    const resetContext = () => {
+        setChangesState({});
+        setCurrentDetails([]);
+        setEditorContent('');
+        setLastGroupId(0);
+        setCurrentGroupId(1);
+        setValId(0);
+        setAllValDetails([]);
+    };
+
     const value = useMemo(() => ({
         currentGroupId,
         setCurrentGroupId,
@@ -226,8 +237,9 @@ export const ValBuilderProvider = ({
         resetChanges,
         updateOriginalDetailsAfterSave,
         convertEditorContentToDetails,
-        syncEditorToContext
-    }), [currentGroupId, editorContent, currentDetails, updateEditorContent, updateSectionDetails, updateSingleValDetail, getAllChanges, hasChanges, resetChanges, updateOriginalDetailsAfterSave, convertEditorContentToDetails, syncEditorToContext]);
+        syncEditorToContext,
+        resetContext
+    }), [currentGroupId, editorContent, currentDetails, updateEditorContent, updateSectionDetails, updateSingleValDetail, getAllChanges, hasChanges, resetChanges, updateOriginalDetailsAfterSave, convertEditorContentToDetails, syncEditorToContext, resetContext]);
 
     return (
         <ValBuilderContext.Provider value={value}>

@@ -12,11 +12,14 @@ import { useState } from 'react';
 import { ValBuilderDrawer } from '@/components/val-builder/ValBuilderDrawer';
 import { useValBuilder } from '@/contexts/ValBuilderContext';
 import { formatAsAmericanDate } from '@/lib/utils';
+import { useQueryClient } from '@tanstack/react-query';
+
 
 export const ValHeadersTable = ({ valHeaders }: { valHeaders: ValHeader[] }) => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [selectedValHeader, setSelectedValHeader] = useState<ValHeader | null>(null);
-    const { resetChanges, setCurrentGroupId, setValId } = useValBuilder();
+    const { resetContext } = useValBuilder();
+    const queryClient = useQueryClient();
 
     const handleOpen = (valHeader: ValHeader) => {
         setSelectedValHeader(valHeader);
@@ -24,11 +27,10 @@ export const ValHeadersTable = ({ valHeaders }: { valHeaders: ValHeader[] }) => 
     };
 
     const handleClose = () => {
+        queryClient.invalidateQueries();
+        resetContext();
         setDrawerOpen(false);
         setSelectedValHeader(null);
-        resetChanges();
-        setValId(0);
-        setCurrentGroupId(1);
     }
 
     return (
