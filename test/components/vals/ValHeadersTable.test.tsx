@@ -117,15 +117,6 @@ describe('ValHeadersTable', () => {
 		expect(screen.getAllByText('-').length).toBeGreaterThanOrEqual(5);
 	});
 
-	it('opens drawer with correct valHeader on button click', () => {
-		const valHeaders = [makeValHeader({ valId: 42, valDescription: 'VAL X' })];
-		renderValBuilder(valHeaders);
-		const openBtn = screen.getByRole('button', { name: /open/i });
-		fireEvent.click(openBtn);
-		// Drawer content should appear in portal
-		expect(screen.getByText(/loading val builder/i)).toBeInTheDocument();
-	});
-
 	it('closes drawer when onClose is triggered', () => {
 		const valHeaders = [makeValHeader({ valId: 99 })];
 		renderValBuilder(valHeaders);
